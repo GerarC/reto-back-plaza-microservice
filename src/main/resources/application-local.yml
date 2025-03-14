@@ -1,0 +1,36 @@
+spring: # Spring Configuration
+    datasource: # Connection with a database
+        url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:postgres}
+        username: ${DB_USER}
+        password: ${DB_PASSWORD}
+        driver-class-name: org.postgresql.Driver
+        hikari:
+            schema: plaza
+
+    jpa:
+        hibernate:
+            ddl-auto: update
+            naming:
+                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        properties:
+            hibernate:
+                format_sql: true
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        show-sql: true
+        database: postgresql
+
+logging:
+    level:
+        web: trace
+        org:
+            springframework:
+                web: trace
+
+server:
+    servlet:
+        context-path: ${APP_PATH:/mall}
+    port: 8098
+
+mall:
+    user:
+        base-url: localhost:8099/mall/v1
