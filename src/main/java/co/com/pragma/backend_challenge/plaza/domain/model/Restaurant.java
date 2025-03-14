@@ -75,7 +75,7 @@ public class Restaurant {
         this.logoUrl = logoUrl;
     }
 
-    public static RestaurantBuilder build(){
+    public static RestaurantBuilder builder(){
         return new RestaurantBuilder();
     }
 

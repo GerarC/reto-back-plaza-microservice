@@ -27,4 +27,10 @@ public class RestConstants {
     public static final String SWAGGER_ERROR_USER_IS_NOT_OWNER = "Given user has no Owner role";
     public static final String SWAGGER_ERROR_USER_DOES_NOT_EXISTS = "Given Id doesn't belong to any existent user";
     public static final String SWAGGER_ERROR_RESTAURANT_WITH_NIT_ALREADY_EXISTS = "A Restaurant with that NIT already exists";
+
+    // Dish
+    public static final String SWAGGER_SUMMARY_CREATE_DISH = "Creates a new dish for a restaurant";
+    public static final String SWAGGER_DESCRIPTION_CREATED_DISH = "The dish has been created";
+    public static final String SWAGGER_ERROR_RESTAURANT_DOES_NOT_FOUND = "A restaurant with that Id doesn't exists";
+
 }
