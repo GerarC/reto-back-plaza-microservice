@@ -4,6 +4,8 @@ package co.com.pragma.backend_challenge.plaza.infrastructure.input.rest.v1;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.RestaurantRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.RestaurantResponse;
 import co.com.pragma.backend_challenge.plaza.application.handler.RestaurantHandler;
+import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ExceptionResponse;
+import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ValidationExceptionResponse;
 import co.com.pragma.backend_challenge.plaza.infrastructure.util.constant.RestConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,7 +30,27 @@ public class RestaurantController {
                     responseCode = RestConstants.SWAGGER_CODE_CREATED,
                     description = RestConstants.SWAGGER_DESCRIPTION_CREATED_RESTAURANT,
                     content =  @Content(schema = @Schema(implementation = RestaurantResponse.class))
-            )
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_NOT_FOUND,
+                    description = RestConstants.SWAGGER_ERROR_USER_DOES_NOT_EXISTS,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
+                    description = RestConstants.SWAGGER_ERROR_USER_IS_NOT_OWNER,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
+                    description = RestConstants.SWAGGER_ERROR_RESTAURANT_WITH_NIT_ALREADY_EXISTS,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_BAD_REQUEST,
+                    description = RestConstants.SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS,
+                    content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))
+            ),
     })
     @PostMapping
     public ResponseEntity<RestaurantResponse> createRestaurant(@RequestBody @Valid RestaurantRequest restaurantRequest){
