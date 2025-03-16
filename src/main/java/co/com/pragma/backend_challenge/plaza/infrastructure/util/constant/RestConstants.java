@@ -17,6 +17,7 @@ public class RestConstants {
 
     // Validations
     public static final String SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS = "Validations don't pass";
+    public static final String SWAGGER_ERROR_USER_IS_NOT_RESTAURANT_OWNER = "User who's trying to patch an object that doesn't belong to they";
 
     // HOME
     public static final String SWAGGER_SUMMARY_GET_HOME = "And endpoint to test if app is running";
@@ -32,5 +33,10 @@ public class RestConstants {
     public static final String SWAGGER_SUMMARY_CREATE_DISH = "Creates a new dish for a restaurant";
     public static final String SWAGGER_DESCRIPTION_CREATED_DISH = "The dish has been created";
     public static final String SWAGGER_ERROR_RESTAURANT_DOES_NOT_FOUND = "A restaurant with that Id doesn't exists";
+
+    // Dish
+    public static final String SWAGGER_SUMMARY_MODIFY_DISH = "Modify price and description of a dish";
+    public static final String SWAGGER_DESCRIPTION_MODIFIED_DISH = "The dish has been modified satisfactorily";
+    public static final String SWAGGER_ERROR_DISH_NOT_FOUND = "Desired dish hasn't been found";
 
 }

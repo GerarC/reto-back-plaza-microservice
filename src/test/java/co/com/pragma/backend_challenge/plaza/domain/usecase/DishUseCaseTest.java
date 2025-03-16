@@ -16,8 +16,7 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class DishUseCaseTest {
 
@@ -63,6 +62,9 @@ class DishUseCaseTest {
     private static final Long DISH_PRICE = 1499L; // Price in cents: $14.99
     private static final String DISH_IMAGE_URL = "http://example.com/spaghetti-carbonara.jpg";
     private static final DishState DISH_STATE = DishState.ACTIVE;
+
+    private static final String DISH_NEW_DESCRIPTION = "New Description";
+    private static final Long DISH_NEW_PRICE = 20000000L;
 
     private static final Dish mockDish = Dish.builder()
             .id(DISH_ID)
@@ -128,5 +130,41 @@ class DishUseCaseTest {
         assertThrows(EntityNotFoundException.class, () ->
             dishUseCase.createDish(mockDish)
         );
+        verify(dishPersistencePort, times(0)).saveDish(any());
+    }
+
+    @Test
+    void modifyDish(){
+        Dish modifiedInfoDish = Dish.builder()
+                .description(DISH_NEW_DESCRIPTION)
+                .price(DISH_NEW_PRICE)
+                .build();
+        final Dish expectedModifiedDish = Dish.builder()
+                .id(DISH_ID)
+                .restaurant(mockRestaurant)
+                .name(DISH_NAME)
+                .description(DISH_NEW_DESCRIPTION)
+                .price(DISH_NEW_PRICE)
+                .category(mockDishCategory)
+                .imageUrl(DISH_IMAGE_URL)
+                .state(DISH_STATE)
+                .build();
+        when(dishPersistencePort.findById(any())).thenReturn(mockDish);
+        when(dishPersistencePort.saveDish(any())).thenReturn(expectedModifiedDish);
+
+        Dish modifiedDish = dishUseCase.modifyDish(DISH_ID, modifiedInfoDish);
+
+        assertEquals(DISH_NEW_DESCRIPTION, modifiedDish.getDescription());
+        assertEquals(DISH_NEW_PRICE, modifiedDish.getPrice());
+    }
+
+    @Test
+    void modifyDish_dishNotFound(){
+        when(dishPersistencePort.findById(any())).thenReturn(null);
+
+        assertThrows(EntityNotFoundException.class, () ->
+                dishUseCase.modifyDish(DISH_ID, mockDish)
+        );
+        verify(dishPersistencePort, times(0)).saveDish(any());
     }
 }
