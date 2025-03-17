@@ -34,7 +34,7 @@ class RestaurantUseCaseTest {
     private static final String RESTAURANT_PHONE = "555-1234";
     private static final String RESTAURANT_LOGO_URL = "http://example.com/logo.png";
 
-    private static Restaurant mockRestaurant = new Restaurant.RestaurantBuilder()
+    private static final Restaurant mockRestaurant = new Restaurant.RestaurantBuilder()
             .nit(RESTAURANT_NIT)
             .ownerId(RESTAURANT_OWNER_ID)
             .name(RESTAURANT_NAME)
@@ -43,7 +43,7 @@ class RestaurantUseCaseTest {
             .logoUrl(RESTAURANT_LOGO_URL)
             .build();
 
-    private static Restaurant expectedRestaurant = new Restaurant.RestaurantBuilder()
+    private static final Restaurant expectedRestaurant = new Restaurant.RestaurantBuilder()
             .id(RESTAURANT_ID)
             .nit(RESTAURANT_NIT)
             .ownerId(RESTAURANT_OWNER_ID)

@@ -4,10 +4,14 @@ import co.com.pragma.backend_challenge.plaza.domain.exception.EntityNotFoundExce
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
 import co.com.pragma.backend_challenge.plaza.domain.model.DishCategory;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
+import co.com.pragma.backend_challenge.plaza.domain.model.security.AuthorizedUser;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishCategoryPersistecePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.RestaurantPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
+import co.com.pragma.backend_challenge.plaza.domain.util.TokenHolder;
 import co.com.pragma.backend_challenge.plaza.domain.util.enums.DishState;
+import co.com.pragma.backend_challenge.plaza.domain.util.enums.RoleName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,13 +30,25 @@ class DishUseCaseTest {
     private DishCategoryPersistecePort dishCategoryPersistecePort;
     @Mock
     private RestaurantPersistencePort restaurantPersistencePort;
+    @Mock
+    private AuthorizationSecurityPort authorizationSecurityPort;
 
     @InjectMocks
     private DishUseCase dishUseCase;
 
+
+    private static final String USER_ID = "user-id";
+    private static final RoleName USER_ROLE = RoleName.OWNER;
+    private static final String USER_TOKEN = "user-authorization-token";
+
+    private final AuthorizedUser mockUser = AuthorizedUser.builder()
+            .role(USER_ROLE)
+            .token(USER_TOKEN)
+            .id(USER_ID)
+            .build();
+
     private static final String RESTAURANT_ID = "restaurant-id";
     private static final String RESTAURANT_NIT = "987654321";
-    private static final String RESTAURANT_OWNER_ID = "owner123";
     private static final String RESTAURANT_NAME = "Mock Restaurant";
     private static final String RESTAURANT_ADDRESS = "123 Fake Street";
     private static final String RESTAURANT_PHONE = "555-1234";
@@ -41,7 +57,7 @@ class DishUseCaseTest {
     private static final Restaurant mockRestaurant = new Restaurant.RestaurantBuilder()
             .id(RESTAURANT_ID)
             .nit(RESTAURANT_NIT)
-            .ownerId(RESTAURANT_OWNER_ID)
+            .ownerId(USER_ID)
             .name(RESTAURANT_NAME)
             .address(RESTAURANT_ADDRESS)
             .phone(RESTAURANT_PHONE)
@@ -88,9 +104,11 @@ class DishUseCaseTest {
             .state(DISH_STATE)
             .build();
 
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        TokenHolder.setToken(USER_TOKEN);
     }
 
     @Test
@@ -98,6 +116,7 @@ class DishUseCaseTest {
         when(dishCategoryPersistecePort.findByDescription(any())).thenReturn(mockDishCategory);
         when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
         when(dishPersistencePort.saveDish(any())).thenReturn(expectedDish);
+        when(authorizationSecurityPort.authorize(USER_TOKEN)).thenReturn(mockUser);
 
         Dish dish = dishUseCase.createDish(mockDish);
 
@@ -112,6 +131,7 @@ class DishUseCaseTest {
         when(dishCategoryPersistecePort.findByDescription(any())).thenReturn(null);
         when(dishCategoryPersistecePort.saveCategory(any())).thenReturn(mockDishCategory);
         when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
+        when(authorizationSecurityPort.authorize(USER_TOKEN)).thenReturn(mockUser);
         when(dishPersistencePort.saveDish(any())).thenReturn(expectedDish);
 
         Dish dish = dishUseCase.createDish(mockDish);
@@ -150,6 +170,8 @@ class DishUseCaseTest {
                 .state(DISH_STATE)
                 .build();
         when(dishPersistencePort.findById(any())).thenReturn(mockDish);
+        when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
+        when(authorizationSecurityPort.authorize(USER_TOKEN)).thenReturn(mockUser);
         when(dishPersistencePort.saveDish(any())).thenReturn(expectedModifiedDish);
 
         Dish modifiedDish = dishUseCase.modifyDish(DISH_ID, modifiedInfoDish);

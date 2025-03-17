@@ -37,12 +37,14 @@ public class BeanConfiguration {
     public DishServicePort dishServicePort(
             DishPersistencePort dishPersistencePort,
             DishCategoryPersistecePort dishCategoryPersistecePort,
-            RestaurantPersistencePort restaurantPersistencePort
+            RestaurantPersistencePort restaurantPersistencePort,
+            AuthorizationSecurityPort authorizationSecurityPort
     ) {
         return new DishUseCase(
                 dishPersistencePort,
                 dishCategoryPersistecePort,
-                restaurantPersistencePort
+                restaurantPersistencePort,
+                authorizationSecurityPort
         );
     }
 

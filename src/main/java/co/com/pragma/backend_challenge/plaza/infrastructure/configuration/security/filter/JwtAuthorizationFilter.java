@@ -1,5 +1,6 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.configuration.security.filter;
 
+import co.com.pragma.backend_challenge.plaza.domain.util.TokenHolder;
 import co.com.pragma.backend_challenge.plaza.infrastructure.util.constant.ConfigurationConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -51,6 +52,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                     new WebAuthenticationDetailsSource().buildDetails(request)
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            TokenHolder.setToken(token);
         } catch (RuntimeException e) {
             logger.error(e.getMessage());
         }
