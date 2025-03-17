@@ -1,7 +1,7 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.output.jpa.adapter;
 
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
-import co.com.pragma.backend_challenge.plaza.domain.spi.RestaurantPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.RestaurantPersistencePort;
 import co.com.pragma.backend_challenge.plaza.infrastructure.output.jpa.entity.RestaurantEntity;
 import co.com.pragma.backend_challenge.plaza.infrastructure.output.jpa.mapper.RestaurantEntityMapper;
 import co.com.pragma.backend_challenge.plaza.infrastructure.output.jpa.repository.RestaurantRepository;

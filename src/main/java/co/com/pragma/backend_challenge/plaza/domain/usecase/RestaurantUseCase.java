@@ -4,8 +4,8 @@ import co.com.pragma.backend_challenge.plaza.domain.api.RestaurantServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.exception.EntityAlreadyExistsException;
 import co.com.pragma.backend_challenge.plaza.domain.exception.UserRoleMustBeOwnerException;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
-import co.com.pragma.backend_challenge.plaza.domain.spi.RestaurantPersistencePort;
-import co.com.pragma.backend_challenge.plaza.domain.spi.UserPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.RestaurantPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.UserPersistencePort;
 
 public class RestaurantUseCase implements RestaurantServicePort {
     private final RestaurantPersistencePort restaurantPersistencePort;

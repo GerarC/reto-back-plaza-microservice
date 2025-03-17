@@ -1,6 +1,7 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.configuration.documentation;
 
 import co.com.pragma.backend_challenge.plaza.domain.util.annotation.Generated;
+import co.com.pragma.backend_challenge.plaza.infrastructure.util.constant.ConfigurationConstants;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -21,8 +22,11 @@ public class OpenApiConfiguration {
                 .title(appName)
                 .description(appDescription)
                 .version(appVersion)
-                .termsOfService("https://swagger.io/terms/")
-                .license(new License().name("Apache 2.0").url("https://springdoc.org"))
+                .termsOfService(ConfigurationConstants.OPENAPI_TERMS_OF_SERVICE)
+                .license(new License()
+                        .name(ConfigurationConstants.OPENAPI_LICENSE_NAME)
+                        .url(ConfigurationConstants.OPENAPI_LICENSE_URL)
+                )
         );
     }
 }

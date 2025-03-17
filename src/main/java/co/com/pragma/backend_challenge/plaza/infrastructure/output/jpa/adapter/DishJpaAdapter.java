@@ -1,7 +1,7 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.output.jpa.adapter;
 
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
-import co.com.pragma.backend_challenge.plaza.domain.spi.DishPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishPersistencePort;
 import co.com.pragma.backend_challenge.plaza.infrastructure.output.jpa.entity.DishEntity;
 import co.com.pragma.backend_challenge.plaza.infrastructure.output.jpa.mapper.DishEntityMapper;
 import co.com.pragma.backend_challenge.plaza.infrastructure.output.jpa.repository.DishRepository;

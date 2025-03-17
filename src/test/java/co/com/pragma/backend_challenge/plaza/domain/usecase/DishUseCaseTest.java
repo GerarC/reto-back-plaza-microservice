@@ -4,9 +4,9 @@ import co.com.pragma.backend_challenge.plaza.domain.exception.EntityNotFoundExce
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
 import co.com.pragma.backend_challenge.plaza.domain.model.DishCategory;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
-import co.com.pragma.backend_challenge.plaza.domain.spi.DishCategoryPersistecePort;
-import co.com.pragma.backend_challenge.plaza.domain.spi.DishPersistencePort;
-import co.com.pragma.backend_challenge.plaza.domain.spi.RestaurantPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishCategoryPersistecePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.RestaurantPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.util.enums.DishState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package co.com.pragma.backend_challenge.plaza.domain.spi;
+package co.com.pragma.backend_challenge.plaza.domain.spi.persistence;
 
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
 
