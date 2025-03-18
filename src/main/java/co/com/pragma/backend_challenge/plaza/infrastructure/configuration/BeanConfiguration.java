@@ -3,10 +3,7 @@ package co.com.pragma.backend_challenge.plaza.infrastructure.configuration;
 import co.com.pragma.backend_challenge.plaza.domain.api.DishServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.api.RestaurantServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.api.security.AuthorizationServicePort;
-import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishCategoryPersistecePort;
-import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishPersistencePort;
-import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.RestaurantPersistencePort;
-import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.UserPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.*;
 import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
 import co.com.pragma.backend_challenge.plaza.domain.usecase.DishUseCase;
 import co.com.pragma.backend_challenge.plaza.domain.usecase.RestaurantUseCase;
@@ -26,10 +23,15 @@ public class BeanConfiguration {
     @Bean
     public RestaurantServicePort restaurantServicePort(
             RestaurantPersistencePort restaurantPersistencePort,
-            UserPersistencePort userPersistencePort) {
+            UserPersistencePort userPersistencePort,
+            EmployeePersistencePort employeePersistencePort,
+            AuthorizationSecurityPort authorizationSecurityPort
+            ) {
         return new RestaurantUseCase(
                 restaurantPersistencePort,
-                userPersistencePort
+                userPersistencePort,
+                employeePersistencePort,
+                authorizationSecurityPort
         );
     }
 

@@ -35,7 +35,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         String token = authorizationHeader.substring(ConfigurationConstants.TOKEN_PREFIX.length());
 
+
         setContextAuthentication(request, token);
+
+        TokenHolder.setToken(authorizationHeader);
 
         filterChain.doFilter(request, response);
 
@@ -52,7 +55,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                     new WebAuthenticationDetailsSource().buildDetails(request)
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            TokenHolder.setToken(token);
         } catch (RuntimeException e) {
             logger.error(e.getMessage());
         }

@@ -16,12 +16,13 @@ public class AppConstants {
     public static final String NAME_FIELD_NOT_NULL = "'name' field must not be null";
     public static final String ADDRESS_FIELD_NOT_NULL = "'address' field must not be null";
     public static final String PHONE_FIELD_NOT_NULL = "'phone' field must not be null";
-    public static final String LOGO_URL_FIELD_NOT_NULL = "'urlLogo' field must not be null";
+    public static final String LOGO_URL_FIELD_NOT_NULL = "'logoUrl' field must not be null";
     public static final String DESCRIPTION_FIELD_NOT_NULL = "'description' field must not be null";
     public static final String RESTAURANT_ID_FIELD_NOT_NULL = "'Restaurant's id' field must not be null";
     public static final String PRICE_FIELD_NOT_NULL = "'price' field must not be null";
     public static final String CATEGORY_FIELD_NOT_NULL = "'category' field must not be null";
     public static final String IMAGE_URL_FIELD_NOT_NULL = "'category' field must not be null";
+    public static final String EMPLOYEE_ID_FIELD_NOT_NULL =  "'employee id' field must not be null";
 
 
     // Wrong pattern messages

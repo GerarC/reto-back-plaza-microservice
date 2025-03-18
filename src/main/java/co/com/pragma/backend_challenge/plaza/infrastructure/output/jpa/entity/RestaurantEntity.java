@@ -13,7 +13,7 @@ import lombok.*;
 public class RestaurantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "restaurant_id", nullable = false)
     private String id;
 
     @Column(name = "nit", nullable = false, unique = true)

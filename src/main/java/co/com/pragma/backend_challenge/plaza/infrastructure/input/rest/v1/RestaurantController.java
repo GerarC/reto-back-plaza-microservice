@@ -1,7 +1,9 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.input.rest.v1;
 
 
+import co.com.pragma.backend_challenge.plaza.application.dto.request.EmployeeRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.RestaurantRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.response.EmployeeResponse;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.RestaurantResponse;
 import co.com.pragma.backend_challenge.plaza.application.handler.RestaurantHandler;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ExceptionResponse;
@@ -58,6 +60,37 @@ public class RestaurantController {
     public ResponseEntity<RestaurantResponse> createRestaurant(@RequestBody @Valid RestaurantRequest restaurantRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 restaurantHandler.createRestaurant(restaurantRequest)
+        );
+    }
+
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_REGISTER_EMPLOYEE)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CREATED,
+                    description = RestConstants.SWAGGER_DESCRIPTION_EMPLOYEE_RELATION_REGISTERED,
+                    content =  @Content(schema = @Schema(implementation = RestaurantResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
+                    description = RestConstants.SWAGGER_ERROR_USER_IS_NOT_OWNER,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
+                    description = RestConstants.SWAGGER_ERROR_RESTAURANT_WITH_NIT_ALREADY_EXISTS,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_BAD_REQUEST,
+                    description = RestConstants.SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS,
+                    content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))
+            ),
+    })
+    @PreAuthorize("hasAnyRole('OWNER')")
+    @PostMapping("/employees")
+    public ResponseEntity<EmployeeResponse> registerEmployee(@RequestBody EmployeeRequest employeeRequest){
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                restaurantHandler.registerEmployee(employeeRequest)
         );
     }
 }

@@ -2,6 +2,7 @@ package co.com.pragma.backend_challenge.plaza.infrastructure.configuration.secur
 
 import co.com.pragma.backend_challenge.plaza.domain.api.security.AuthorizationServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.model.security.AuthorizedUser;
+import co.com.pragma.backend_challenge.plaza.infrastructure.util.constant.ConfigurationConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,7 +27,7 @@ public class UserDetailsFeign implements UserDetailsService {
         AuthorizedUser authResponse = authorizationServicePort.authorize(token);
 
         Collection<? extends GrantedAuthority> authorities =
-                Set.of(new SimpleGrantedAuthority(authResponse.getRole().name()));
+                Set.of(new SimpleGrantedAuthority(ConfigurationConstants.ROLE_PREFIX + authResponse.getRole().name()));
 
         return new User(authResponse.getId(), token, authorities);
     }

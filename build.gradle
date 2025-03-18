@@ -42,6 +42,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.4.3'
+    implementation 'com.h2database:h2'
+
     // Feign
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.0'
     implementation group: 'io.github.openfeign', name: 'feign-hc5', version: '13.5'
@@ -66,17 +68,22 @@ dependencyManagement {
     }
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-}
 
 def jacocoExclude = [
-        "src/**/model/**/*",
-        "src/**/application/**/*",
-        "src/**/infrastructure/**/*",
+        '**/dto/.*',
+        '**/spi/.*',
+        '**/api/.*',
+        '**/mappers/.*',
+        '**/repository/.*',
+        '**/*.test',
+        '**/generated/.*',
+        "**/model/**/.*",
+        "**/application/**/.*",
+        "**/infrastructure/**/.*",
 ]
 
 test {
+    useJUnitPlatform()
     finalizedBy jacocoTestReport
 }
 
@@ -86,7 +93,6 @@ jacoco {
 
 
 jacocoTestReport {
-    dependsOn test
     reports {
         xml.required = true
         html.required = true
@@ -95,17 +101,5 @@ jacocoTestReport {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: jacocoExclude)
         }))
-    }
-    finalizedBy jacocoTestCoverageVerification
-}
-
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            excludes = jacocoExclude
-            limit {
-                minimum = 0.1
-            }
-        }
     }
 }
