@@ -1,8 +1,8 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.input.rest.v1;
 
-import co.com.pragma.backend_challenge.plaza.application.dto.request.DishRequest;
-import co.com.pragma.backend_challenge.plaza.application.dto.request.DishStateRequest;
-import co.com.pragma.backend_challenge.plaza.application.dto.request.PatchDishRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.dish.DishRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.dish.DishStateRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.dish.PatchDishRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.DishResponse;
 import co.com.pragma.backend_challenge.plaza.application.handler.DishHandler;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ExceptionResponse;
@@ -76,7 +76,7 @@ public class DishController {
                     content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))
             ),
     })
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/state")
     @PreAuthorize("hasAnyRole('OWNER')")
     public ResponseEntity<DishResponse> patchDish(@PathVariable Long id, @RequestBody @Valid PatchDishRequest patchDishRequest){
         return ResponseEntity.ok(

@@ -1,12 +1,9 @@
-package co.com.pragma.backend_challenge.plaza.application.mapper.request;
+package co.com.pragma.backend_challenge.plaza.application.mapper.request.dish;
 
-import co.com.pragma.backend_challenge.plaza.application.dto.request.PatchDishRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.dish.PatchDishRequest;
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
-import co.com.pragma.backend_challenge.plaza.domain.model.DishCategory;
-import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
 import co.com.pragma.backend_challenge.plaza.domain.util.annotation.Generated;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;

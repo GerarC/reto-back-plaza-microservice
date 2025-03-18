@@ -3,7 +3,10 @@ package co.com.pragma.backend_challenge.plaza.infrastructure.input.rest.v1;
 
 import co.com.pragma.backend_challenge.plaza.application.dto.request.EmployeeRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.RestaurantRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.PaginationRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.RestaurantPageQuery;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.EmployeeResponse;
+import co.com.pragma.backend_challenge.plaza.application.dto.response.PageResponse;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.RestaurantResponse;
 import co.com.pragma.backend_challenge.plaza.application.handler.RestaurantHandler;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ExceptionResponse;
@@ -14,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -91,6 +95,23 @@ public class RestaurantController {
     public ResponseEntity<EmployeeResponse> registerEmployee(@RequestBody EmployeeRequest employeeRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 restaurantHandler.registerEmployee(employeeRequest)
+        );
+    }
+
+
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_FIND_PAGE_RESTAURANT)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CREATED,
+                    description = RestConstants.SWAGGER_DESCRIPTION_FOUND_PAGE_RESTAURANT,
+                    content =  @Content(schema = @Schema(implementation = RestaurantResponse.class))
+            ),
+    })
+    @GetMapping
+    public ResponseEntity<PageResponse<RestaurantResponse>> findRestaurants(@Nullable RestaurantPageQuery query){
+        PaginationRequest pagination = PaginationRequest.build(query);
+        return ResponseEntity.ok(
+                restaurantHandler.findPage(pagination)
         );
     }
 }
