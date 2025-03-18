@@ -1,4 +1,4 @@
-package co.com.pragma.backend_challenge.plaza.application.dto.request;
+package co.com.pragma.backend_challenge.plaza.application.dto.request.dish;
 
 import co.com.pragma.backend_challenge.plaza.domain.util.enums.DishState;
 import lombok.Builder;

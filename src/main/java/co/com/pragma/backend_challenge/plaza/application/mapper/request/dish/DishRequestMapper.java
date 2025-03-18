@@ -1,6 +1,6 @@
-package co.com.pragma.backend_challenge.plaza.application.mapper.request;
+package co.com.pragma.backend_challenge.plaza.application.mapper.request.dish;
 
-import co.com.pragma.backend_challenge.plaza.application.dto.request.DishRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.dish.DishRequest;
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
 import co.com.pragma.backend_challenge.plaza.domain.model.DishCategory;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;

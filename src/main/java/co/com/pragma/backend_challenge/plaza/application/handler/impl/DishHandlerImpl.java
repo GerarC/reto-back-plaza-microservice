@@ -1,12 +1,12 @@
 package co.com.pragma.backend_challenge.plaza.application.handler.impl;
 
-import co.com.pragma.backend_challenge.plaza.application.dto.request.DishRequest;
-import co.com.pragma.backend_challenge.plaza.application.dto.request.DishStateRequest;
-import co.com.pragma.backend_challenge.plaza.application.dto.request.PatchDishRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.dish.DishRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.dish.DishStateRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.dish.PatchDishRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.DishResponse;
 import co.com.pragma.backend_challenge.plaza.application.handler.DishHandler;
-import co.com.pragma.backend_challenge.plaza.application.mapper.request.DishRequestMapper;
-import co.com.pragma.backend_challenge.plaza.application.mapper.request.PatchDishRequestMapper;
+import co.com.pragma.backend_challenge.plaza.application.mapper.request.dish.DishRequestMapper;
+import co.com.pragma.backend_challenge.plaza.application.mapper.request.dish.PatchDishRequestMapper;
 import co.com.pragma.backend_challenge.plaza.application.mapper.response.DishResponseMapper;
 import co.com.pragma.backend_challenge.plaza.domain.api.DishServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;

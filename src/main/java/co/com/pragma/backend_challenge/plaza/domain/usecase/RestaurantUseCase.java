@@ -14,6 +14,8 @@ import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.UserPersiste
 import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
 import co.com.pragma.backend_challenge.plaza.domain.util.DomainConstants;
 import co.com.pragma.backend_challenge.plaza.domain.util.TokenHolder;
+import co.com.pragma.backend_challenge.plaza.domain.util.pagination.DomainPage;
+import co.com.pragma.backend_challenge.plaza.domain.util.pagination.PaginationData;
 
 import java.util.Objects;
 
@@ -41,8 +43,20 @@ public class RestaurantUseCase implements RestaurantServicePort {
 
     @Override
     public Employee registerEmployee(Employee employee) {
-        validateCanRegisterEmployee(employee);
+        Restaurant restaurant = restaurantPersistencePort.findById(employee.getRestaurant().getId());
+        if (restaurant == null)
+            throw new EntityNotFoundException(Restaurant.class.getSimpleName(), employee.getRestaurant().getId());
+        AuthorizedUser user = authorizationSecurityPort.authorize(TokenHolder.getToken().substring(DomainConstants.TOKEN_PREFIX.length()));
+        employee.setRestaurant(restaurant);
+        if(!Objects.equals(user.getId(), restaurant.getOwnerId()))
+            throw new RestaurantDoesNotBelongToUserException();
         return employeePersistencePort.saveEmployee(employee);
+    }
+
+    @Override
+    public DomainPage<Restaurant> findPage(PaginationData paginationData) {
+        paginationData.setColumn(DomainConstants.NAME_FIELD);
+        return restaurantPersistencePort.findAll(paginationData);
     }
 
     private void validateRestaurantData(Restaurant restaurant){
@@ -51,14 +65,4 @@ public class RestaurantUseCase implements RestaurantServicePort {
         if(restaurantPersistencePort.findByNit(restaurant.getNit())!=null)
             throw new EntityAlreadyExistsException(Restaurant.class.getSimpleName(), restaurant.getNit());
     }
-
-    private void validateCanRegisterEmployee(Employee employee) {
-        Restaurant restaurant = restaurantPersistencePort.findById(employee.getRestaurant().getId());
-        if (restaurant == null)
-            throw new EntityNotFoundException(Restaurant.class.getSimpleName(), employee.getRestaurant().getId());
-        AuthorizedUser user = authorizationSecurityPort.authorize(TokenHolder.getToken().substring(DomainConstants.TOKEN_PREFIX.length()));
-        if(!Objects.equals(user.getId(), restaurant.getOwnerId()))
-            throw new RestaurantDoesNotBelongToUserException();
-    }
-
 }

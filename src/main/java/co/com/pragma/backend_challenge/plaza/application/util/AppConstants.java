@@ -1,6 +1,7 @@
 package co.com.pragma.backend_challenge.plaza.application.util;
 
 public class AppConstants {
+
     private AppConstants() {
         throw new IllegalStateException("Utility Class");
     }

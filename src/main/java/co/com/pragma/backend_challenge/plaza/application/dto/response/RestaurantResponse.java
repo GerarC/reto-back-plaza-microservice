@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class RestaurantResponse {
-    private String nit;
     private String name;
+    private String logoUrl;
 }
