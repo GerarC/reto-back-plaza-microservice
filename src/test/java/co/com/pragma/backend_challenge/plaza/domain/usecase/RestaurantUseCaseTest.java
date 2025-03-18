@@ -4,14 +4,17 @@ import co.com.pragma.backend_challenge.plaza.domain.exception.EntityAlreadyExist
 import co.com.pragma.backend_challenge.plaza.domain.exception.EntityNotFoundException;
 import co.com.pragma.backend_challenge.plaza.domain.exception.RestaurantDoesNotBelongToUserException;
 import co.com.pragma.backend_challenge.plaza.domain.exception.UserRoleMustBeOwnerException;
+import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
 import co.com.pragma.backend_challenge.plaza.domain.model.Employee;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
 import co.com.pragma.backend_challenge.plaza.domain.model.security.AuthorizedUser;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.EmployeePersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.RestaurantPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.UserPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
 import co.com.pragma.backend_challenge.plaza.domain.util.DomainConstants;
+import co.com.pragma.backend_challenge.plaza.domain.util.TokenHolder;
 import co.com.pragma.backend_challenge.plaza.domain.util.enums.RoleName;
 import co.com.pragma.backend_challenge.plaza.domain.util.pagination.DomainPage;
 import co.com.pragma.backend_challenge.plaza.domain.util.pagination.PaginationData;
@@ -21,12 +24,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class RestaurantUseCaseTest {
-
     @Mock
     private UserPersistencePort userPersistencePort;
 
@@ -39,8 +43,15 @@ class RestaurantUseCaseTest {
     @Mock
     private EmployeePersistencePort employeePersistencePort;
 
+    @Mock
+    private DishPersistencePort dishPersistencePort;
+
     @InjectMocks
     RestaurantUseCase restaurantUseCase;
+
+    public static final String TOKEN = "Bearer any-token-buh";
+    private static final String CATEGORY_MAIN_COURSE = "Main Course";
+    private static final String CATEGORY_DESSERTS = "Desserts";
 
     public static final String DIFFERENT_OWNER_ID = "different-owner";
     private static final String RESTAURANT_ID = "restaurant-id";
@@ -73,6 +84,7 @@ class RestaurantUseCaseTest {
 
     @BeforeEach
     void setUp() {
+        TokenHolder.setToken(TOKEN);
         MockitoAnnotations.openMocks(this);
     }
 
@@ -166,5 +178,34 @@ class RestaurantUseCaseTest {
         verify(restaurantPersistencePort).findAll(paginationData);
         assertEquals(expectedPage, result);
         assertEquals(DomainConstants.NAME_FIELD, paginationData.getColumn());
+    }
+
+    @Test
+    void findDishesOfRestaurant_ShouldReturnDomainPageOfDishes() {
+        PaginationData paginationData = PaginationData.builder().build();
+        DomainPage<Dish> expectedPage = DomainPage.<Dish>builder().build();
+
+        when(dishPersistencePort.findAll(any(), any())).thenReturn(expectedPage);
+        when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
+
+        DomainPage<Dish> result = restaurantUseCase.findDishesOfRestaurant(RESTAURANT_ID, CATEGORY_MAIN_COURSE, paginationData);
+
+        verify(dishPersistencePort).findAll(any(), eq(paginationData));
+        assertEquals(expectedPage, result);
+    }
+
+    @Test
+    void findDishesOfRestaurant_ShouldHandleEmptyResults() {
+        PaginationData paginationData = PaginationData.builder().build();
+        DomainPage<Dish> emptyPage = DomainPage.<Dish>builder().build();
+        emptyPage.setContent(List.of());
+
+        when(dishPersistencePort.findAll(any(), any())).thenReturn(emptyPage);
+        when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
+
+        DomainPage<Dish> result = restaurantUseCase.findDishesOfRestaurant(RESTAURANT_ID, CATEGORY_DESSERTS, paginationData);
+
+        assertNotNull(result);
+        assertTrue(result.getContent().isEmpty());
     }
 }
