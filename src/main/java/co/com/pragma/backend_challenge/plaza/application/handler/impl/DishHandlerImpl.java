@@ -1,6 +1,7 @@
 package co.com.pragma.backend_challenge.plaza.application.handler.impl;
 
 import co.com.pragma.backend_challenge.plaza.application.dto.request.DishRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.DishStateRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.PatchDishRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.DishResponse;
 import co.com.pragma.backend_challenge.plaza.application.handler.DishHandler;
@@ -35,5 +36,12 @@ public class DishHandlerImpl implements DishHandler {
                 dishServicePort.modifyDish(id, dish)
         );
 
+    }
+
+    @Override
+    public DishResponse setDishState(Long id, DishStateRequest dishStateRequest) {
+        return dishResponseMapper.toResponse(
+                dishServicePort.changeDishState(id, dishStateRequest.getState())
+        );
     }
 }

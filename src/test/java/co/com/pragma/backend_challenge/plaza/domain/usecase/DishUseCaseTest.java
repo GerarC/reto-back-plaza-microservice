@@ -1,6 +1,7 @@
 package co.com.pragma.backend_challenge.plaza.domain.usecase;
 
 import co.com.pragma.backend_challenge.plaza.domain.exception.EntityNotFoundException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.RestaurantDoesNotBelongToUserException;
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
 import co.com.pragma.backend_challenge.plaza.domain.model.DishCategory;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
@@ -40,6 +41,7 @@ class DishUseCaseTest {
     private static final String USER_ID = "user-id";
     private static final RoleName USER_ROLE = RoleName.OWNER;
     private static final String USER_TOKEN = "user-authorization-token";
+    public static final String ANOTHER_USER_ID = "another-user";
 
     private final AuthorizedUser mockUser = AuthorizedUser.builder()
             .role(USER_ROLE)
@@ -189,4 +191,45 @@ class DishUseCaseTest {
         );
         verify(dishPersistencePort, times(0)).saveDish(any());
     }
+
+    @Test
+    void changeDishState_Success() {
+        expectedDish.setState(DishState.INACTIVE);
+        when(dishPersistencePort.findById(any())).thenReturn(mockDish);
+        when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
+        when(authorizationSecurityPort.authorize(any())).thenReturn(mockUser);
+        when(dishPersistencePort.saveDish(any())).thenReturn(expectedDish);
+
+        Dish dish = dishUseCase.changeDishState(DISH_ID, DishState.INACTIVE);
+
+        verify(dishPersistencePort).findById(any());
+        verify(restaurantPersistencePort).findById(any());
+        verify(dishPersistencePort).saveDish(any());
+        assertEquals(DishState.INACTIVE, dish.getState());
+    }
+
+    @Test
+    void changeDishState_DishNotFound() {
+        when(dishPersistencePort.findById(any())).thenReturn(null);
+
+        assertThrows(EntityNotFoundException.class, () ->
+                dishUseCase.changeDishState(DISH_ID, DishState.INACTIVE)
+        );
+        verify(dishPersistencePort, times(0)).saveDish(any());
+    }
+
+    @Test
+    void changeDishState_UserNotOwner() {
+        when(dishPersistencePort.findById(any())).thenReturn(mockDish);
+        when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
+        when(authorizationSecurityPort.authorize(any())).thenReturn(
+                AuthorizedUser.builder().id(ANOTHER_USER_ID).role(RoleName.OWNER).build()
+        );
+
+        assertThrows(RestaurantDoesNotBelongToUserException.class, () ->
+                dishUseCase.changeDishState(DISH_ID, DishState.INACTIVE)
+        );
+        verify(dishPersistencePort, times(0)).saveDish(any());
+    }
+
 }

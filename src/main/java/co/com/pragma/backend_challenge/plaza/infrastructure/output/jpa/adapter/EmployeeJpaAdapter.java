@@ -17,6 +17,8 @@ public class EmployeeJpaAdapter implements EmployeePersistencePort {
     @Override
     public Employee saveEmployee(Employee employee) {
         EmployeeEntity entity = employeeEntityMapper.toEntity(employee);
-        return employeeEntityMapper.toDomain(entity);
+        return employeeEntityMapper.toDomain(
+                employeeRepository.save(entity)
+        );
     }
 }
