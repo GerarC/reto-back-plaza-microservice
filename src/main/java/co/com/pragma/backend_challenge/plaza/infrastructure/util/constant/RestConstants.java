@@ -5,6 +5,9 @@ import co.com.pragma.backend_challenge.plaza.domain.util.annotation.Generated;
 
 @Generated
 public class RestConstants {
+
+
+
     private RestConstants() {
         throw new IllegalStateException("Utility Class");
     }
@@ -12,6 +15,7 @@ public class RestConstants {
     public static final String SWAGGER_CODE_CREATED = "201";
     public static final String SWAGGER_CODE_OK = "200";
     public static final String SWAGGER_CODE_BAD_REQUEST = "400";
+    public static final String SWAGGER_CODE_UNAUTHORIZED = "401";
     public static final String SWAGGER_CODE_NOT_FOUND = "404";
     public static final String SWAGGER_CODE_CONFLICT = "409";
 
@@ -35,10 +39,9 @@ public class RestConstants {
     public static final String SWAGGER_SUMMARY_CREATE_DISH = "Creates a new dish for a restaurant";
     public static final String SWAGGER_DESCRIPTION_CREATED_DISH = "The dish has been created";
     public static final String SWAGGER_ERROR_RESTAURANT_DOES_NOT_FOUND = "A restaurant with that Id doesn't exists";
-
-    // Dish
     public static final String SWAGGER_SUMMARY_MODIFY_DISH = "Modify price and description of a dish";
     public static final String SWAGGER_DESCRIPTION_MODIFIED_DISH = "The dish has been modified satisfactorily";
     public static final String SWAGGER_ERROR_DISH_NOT_FOUND = "Desired dish hasn't been found";
-
+    public static final String SWAGGER_SUMMARY_CHANGED_DISH_STATE = "Change state of the given dish";
+    public static final String SWAGGER_DESCRIPTION_CHANGED_DISH_STATE = "Dish state has been changed";
 }

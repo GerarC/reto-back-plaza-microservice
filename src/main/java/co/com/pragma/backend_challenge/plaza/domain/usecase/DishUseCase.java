@@ -45,12 +45,18 @@ public class DishUseCase implements DishServicePort {
 
     @Override
     public Dish modifyDish(Long id, Dish dish) {
-        Dish dishToModify = dishPersistencePort.findById(id);
-        if(dishToModify == null)
-            throw new EntityNotFoundException(Dish.class.getSimpleName(), id.toString());
+        Dish dishToModify = findById(id);
         validateDish(dishToModify);
         if(dish.getDescription() != null) dishToModify.setDescription(dish.getDescription());
         if(dish.getPrice() != null) dishToModify.setPrice(dish.getPrice());
+        return dishPersistencePort.saveDish(dishToModify);
+    }
+
+    @Override
+    public Dish changeDishState(Long id, DishState state) {
+        Dish dishToModify = findById(id);
+        validateDish(dishToModify);
+        dishToModify.setState(state);
         return dishPersistencePort.saveDish(dishToModify);
     }
 
@@ -67,5 +73,12 @@ public class DishUseCase implements DishServicePort {
             throw new EntityNotFoundException(Restaurant.class.getSimpleName(), dish.getRestaurant().getId());
         if(!Objects.equals(user.getId(), restaurant.getOwnerId()))
             throw new RestaurantDoesNotBelongToUserException();
+    }
+
+    private Dish findById(Long id){
+        Dish dish = dishPersistencePort.findById(id);
+        if(dish == null)
+            throw new EntityNotFoundException(Dish.class.getSimpleName(), id.toString());
+        return dish;
     }
 }

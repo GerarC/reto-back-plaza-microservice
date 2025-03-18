@@ -1,9 +1,9 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.input.rest.v1;
 
 import co.com.pragma.backend_challenge.plaza.application.dto.request.DishRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.DishStateRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.PatchDishRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.DishResponse;
-import co.com.pragma.backend_challenge.plaza.application.dto.response.RestaurantResponse;
 import co.com.pragma.backend_challenge.plaza.application.handler.DishHandler;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ExceptionResponse;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ValidationExceptionResponse;
@@ -57,7 +57,7 @@ public class DishController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = RestConstants.SWAGGER_CODE_OK,
-                    description = RestConstants.SWAGGER_SUMMARY_MODIFY_DISH,
+                    description = RestConstants.SWAGGER_DESCRIPTION_MODIFIED_DISH,
                     content =  @Content(schema = @Schema(implementation = DishResponse.class))
             ),
             @ApiResponse(
@@ -66,16 +66,52 @@ public class DishController {
                     content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
             @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_UNAUTHORIZED,
+                    description = RestConstants.SWAGGER_ERROR_USER_IS_NOT_RESTAURANT_OWNER,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
                     responseCode = RestConstants.SWAGGER_CODE_BAD_REQUEST,
                     description = RestConstants.SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS,
                     content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))
             ),
     })
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('OWNER')")
     public ResponseEntity<DishResponse> patchDish(@PathVariable Long id, @RequestBody @Valid PatchDishRequest patchDishRequest){
         return ResponseEntity.ok(
                 dishHandler.modifyDish(id, patchDishRequest)
+        );
+    }
+
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_CHANGED_DISH_STATE)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_OK,
+                    description = RestConstants.SWAGGER_DESCRIPTION_CHANGED_DISH_STATE,
+                    content =  @Content(schema = @Schema(implementation = DishResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_NOT_FOUND,
+                    description = RestConstants.SWAGGER_ERROR_DISH_NOT_FOUND,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_UNAUTHORIZED,
+                    description = RestConstants.SWAGGER_ERROR_USER_IS_NOT_RESTAURANT_OWNER,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_BAD_REQUEST,
+                    description = RestConstants.SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS,
+                    content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))
+            ),
+    })
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OWNER')")
+    public ResponseEntity<DishResponse> changeState(@PathVariable Long id, DishStateRequest dishStateRequest){
+        return ResponseEntity.ok(
+                dishHandler.setDishState(id, dishStateRequest)
         );
     }
 }
