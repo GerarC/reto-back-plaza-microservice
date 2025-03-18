@@ -11,6 +11,7 @@ import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishCategory
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.RestaurantPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
+import co.com.pragma.backend_challenge.plaza.domain.util.DomainConstants;
 import co.com.pragma.backend_challenge.plaza.domain.util.TokenHolder;
 import co.com.pragma.backend_challenge.plaza.domain.util.enums.DishState;
 
@@ -61,7 +62,7 @@ public class DishUseCase implements DishServicePort {
 
     private void validateDish(Dish dish) {
         Restaurant restaurant = restaurantPersistencePort.findById(dish.getRestaurant().getId());
-        AuthorizedUser user = authorizationSecurityPort.authorize(TokenHolder.getToken());
+        AuthorizedUser user = authorizationSecurityPort.authorize(TokenHolder.getToken().substring(DomainConstants.TOKEN_PREFIX.length()));
         if (restaurant == null)
             throw new EntityNotFoundException(Restaurant.class.getSimpleName(), dish.getRestaurant().getId());
         if(!Objects.equals(user.getId(), restaurant.getOwnerId()))

@@ -116,7 +116,7 @@ class DishUseCaseTest {
         when(dishCategoryPersistecePort.findByDescription(any())).thenReturn(mockDishCategory);
         when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
         when(dishPersistencePort.saveDish(any())).thenReturn(expectedDish);
-        when(authorizationSecurityPort.authorize(USER_TOKEN)).thenReturn(mockUser);
+        when(authorizationSecurityPort.authorize(any())).thenReturn(mockUser);
 
         Dish dish = dishUseCase.createDish(mockDish);
 
@@ -131,7 +131,7 @@ class DishUseCaseTest {
         when(dishCategoryPersistecePort.findByDescription(any())).thenReturn(null);
         when(dishCategoryPersistecePort.saveCategory(any())).thenReturn(mockDishCategory);
         when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
-        when(authorizationSecurityPort.authorize(USER_TOKEN)).thenReturn(mockUser);
+        when(authorizationSecurityPort.authorize(any())).thenReturn(mockUser);
         when(dishPersistencePort.saveDish(any())).thenReturn(expectedDish);
 
         Dish dish = dishUseCase.createDish(mockDish);
@@ -171,7 +171,7 @@ class DishUseCaseTest {
                 .build();
         when(dishPersistencePort.findById(any())).thenReturn(mockDish);
         when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
-        when(authorizationSecurityPort.authorize(USER_TOKEN)).thenReturn(mockUser);
+        when(authorizationSecurityPort.authorize(any())).thenReturn(mockUser);
         when(dishPersistencePort.saveDish(any())).thenReturn(expectedModifiedDish);
 
         Dish modifiedDish = dishUseCase.modifyDish(DISH_ID, modifiedInfoDish);

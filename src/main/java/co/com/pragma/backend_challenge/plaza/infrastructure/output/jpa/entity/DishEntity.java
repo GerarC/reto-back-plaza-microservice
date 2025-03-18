@@ -34,5 +34,10 @@ public class DishEntity {
     private String imageUrl;
 
     @Column(name = "dish_state", nullable = false)
-    private DishState dishState;
+    private DishState state;
+
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "restaurant_id", referencedColumnName = "restaurant_id", nullable = false)
+    private RestaurantEntity restaurant;
+
 }

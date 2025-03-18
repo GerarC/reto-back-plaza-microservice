@@ -1,6 +1,8 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor;
 
 import co.com.pragma.backend_challenge.plaza.domain.exception.EntityAlreadyExistsException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.NotAuthorizedException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.RestaurantDoesNotBelongToUserException;
 import co.com.pragma.backend_challenge.plaza.domain.exception.UserRoleMustBeOwnerException;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ExceptionResponse;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ValidationExceptionResponse;
@@ -17,14 +19,24 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class ExceptionAdvisor {
 
+    @ExceptionHandler(EntityAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleEntityAlreadyExists(EntityAlreadyExistsException e){
+        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleEntityNotFound(EntityNotFoundException e){
         return ExceptionResponseBuilder.buildResponse(e, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(EntityAlreadyExistsException.class)
-    public ResponseEntity<ExceptionResponse> handleEntityAlreadyExists(EntityAlreadyExistsException e){
-        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
+    @ExceptionHandler(NotAuthorizedException.class)
+    public ResponseEntity<ExceptionResponse> handleNotAuthorized(NotAuthorizedException e){
+        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(RestaurantDoesNotBelongToUserException.class)
+    public ResponseEntity<ExceptionResponse> handleRestaurantDoesNotBelongToUser(RestaurantDoesNotBelongToUserException e){
+        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(UserRoleMustBeOwnerException.class)

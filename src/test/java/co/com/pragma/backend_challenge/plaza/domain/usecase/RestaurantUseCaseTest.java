@@ -1,10 +1,17 @@
 package co.com.pragma.backend_challenge.plaza.domain.usecase;
 
 import co.com.pragma.backend_challenge.plaza.domain.exception.EntityAlreadyExistsException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.EntityNotFoundException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.RestaurantDoesNotBelongToUserException;
 import co.com.pragma.backend_challenge.plaza.domain.exception.UserRoleMustBeOwnerException;
+import co.com.pragma.backend_challenge.plaza.domain.model.Employee;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
+import co.com.pragma.backend_challenge.plaza.domain.model.security.AuthorizedUser;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.EmployeePersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.RestaurantPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.UserPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
+import co.com.pragma.backend_challenge.plaza.domain.util.enums.RoleName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -23,9 +30,16 @@ class RestaurantUseCaseTest {
     @Mock
     private RestaurantPersistencePort restaurantPersistencePort;
 
+    @Mock
+    private AuthorizationSecurityPort authorizationSecurityPort;
+
+    @Mock
+    private EmployeePersistencePort employeePersistencePort;
+
     @InjectMocks
     RestaurantUseCase restaurantUseCase;
 
+    public static final String DIFFERENT_OWNER_ID = "different-owner";
     private static final String RESTAURANT_ID = "restaurant-id";
     private static final String RESTAURANT_NIT = "987654321";
     private static final String RESTAURANT_OWNER_ID = "owner123";
@@ -61,12 +75,10 @@ class RestaurantUseCaseTest {
 
     @Test
     void createRestaurant() {
-        // Assert
         when(userPersistencePort.isOwner(any())).thenReturn(true);
         when(restaurantPersistencePort.findByNit(any())).thenReturn(null);
         when(restaurantPersistencePort.saveRestaurant(any())).thenReturn(expectedRestaurant);
 
-        // Act
         Restaurant restaurant = restaurantUseCase.createRestaurant(mockRestaurant);
 
         verify(userPersistencePort).isOwner(any());
@@ -78,10 +90,8 @@ class RestaurantUseCaseTest {
 
     @Test
     void createRestaurant_userIsNotOwner() {
-        // Assert
         when(userPersistencePort.isOwner(any())).thenReturn(false);
 
-        // Act
         assertThrows(UserRoleMustBeOwnerException.class, () -> restaurantUseCase.createRestaurant(mockRestaurant));
 
         verify(restaurantPersistencePort, times(0)).saveRestaurant(any());
@@ -89,13 +99,55 @@ class RestaurantUseCaseTest {
 
     @Test
     void createRestaurant_restaurantAlreadyExists() {
-        // Assert
         when(userPersistencePort.isOwner(any())).thenReturn(true);
         when(restaurantPersistencePort.findByNit(any())).thenReturn(expectedRestaurant);
 
-        // Act
         assertThrows(EntityAlreadyExistsException.class, () -> restaurantUseCase.createRestaurant(mockRestaurant));
 
         verify(restaurantPersistencePort, times(0)).saveRestaurant(any());
+    }
+
+    @Test
+    void registerEmployee_Success() {
+        when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
+        when(authorizationSecurityPort.authorize(any())).thenReturn(
+                AuthorizedUser.builder().id(RESTAURANT_OWNER_ID).role(RoleName.OWNER).build()
+        );
+        when(employeePersistencePort.saveEmployee(any())).thenReturn(
+                Employee.builder().restaurant(mockRestaurant).build()
+        );
+
+        Employee employee = Employee.builder().restaurant(mockRestaurant).build();
+
+        Employee registeredEmployee = restaurantUseCase.registerEmployee(employee);
+
+        // Assert
+        verify(restaurantPersistencePort).findById(any());
+        verify(authorizationSecurityPort).authorize(any());
+        verify(employeePersistencePort).saveEmployee(any());
+        assertNotNull(registeredEmployee);
+    }
+
+    @Test
+    void registerEmployee_RestaurantNotFound() {
+        when(restaurantPersistencePort.findById(any())).thenReturn(null);
+
+        Employee employee = Employee.builder().restaurant(mockRestaurant).build();
+
+        assertThrows(EntityNotFoundException.class, () -> restaurantUseCase.registerEmployee(employee));
+        verify(employeePersistencePort, never()).saveEmployee(any());
+    }
+
+    @Test
+    void registerEmployee_UserNotOwner() {
+        when(restaurantPersistencePort.findById(any())).thenReturn(mockRestaurant);
+        when(authorizationSecurityPort.authorize(any())).thenReturn(
+                AuthorizedUser.builder().id(DIFFERENT_OWNER_ID).role(RoleName.OWNER).build()
+        );
+
+        Employee employee = Employee.builder().restaurant(mockRestaurant).build();
+
+        assertThrows(RestaurantDoesNotBelongToUserException.class, () -> restaurantUseCase.registerEmployee(employee));
+        verify(employeePersistencePort, never()).saveEmployee(any());
     }
 }
