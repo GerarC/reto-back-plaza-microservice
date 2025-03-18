@@ -25,13 +25,15 @@ public class BeanConfiguration {
             RestaurantPersistencePort restaurantPersistencePort,
             UserPersistencePort userPersistencePort,
             EmployeePersistencePort employeePersistencePort,
-            AuthorizationSecurityPort authorizationSecurityPort
-            ) {
+            AuthorizationSecurityPort authorizationSecurityPort,
+            DishPersistencePort dishPersistencePort
+    ) {
         return new RestaurantUseCase(
                 restaurantPersistencePort,
                 userPersistencePort,
                 employeePersistencePort,
-                authorizationSecurityPort
+                authorizationSecurityPort,
+                dishPersistencePort
         );
     }
 
@@ -53,7 +55,7 @@ public class BeanConfiguration {
     @Bean
     public AuthorizationServicePort authorizationServicePort(
             AuthorizationSecurityPort authorizationSecurityPort
-    ){
+    ) {
         return new AuthorizationUseCase(authorizationSecurityPort);
     }
 

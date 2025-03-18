@@ -40,6 +40,11 @@ public class DishController {
                     content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
             @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_UNAUTHORIZED,
+                    description = RestConstants.SWAGGER_ERROR_USER_IS_NOT_RESTAURANT_OWNER,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
                     responseCode = RestConstants.SWAGGER_CODE_BAD_REQUEST,
                     description = RestConstants.SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS,
                     content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))

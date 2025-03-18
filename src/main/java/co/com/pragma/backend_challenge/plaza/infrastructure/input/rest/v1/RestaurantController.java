@@ -3,8 +3,11 @@ package co.com.pragma.backend_challenge.plaza.infrastructure.input.rest.v1;
 
 import co.com.pragma.backend_challenge.plaza.application.dto.request.EmployeeRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.RestaurantRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.filter.DishFilterRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.PageQuery;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.PaginationRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.RestaurantPageQuery;
+import co.com.pragma.backend_challenge.plaza.application.dto.response.DishResponse;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.EmployeeResponse;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.PageResponse;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.RestaurantResponse;
@@ -72,7 +75,7 @@ public class RestaurantController {
             @ApiResponse(
                     responseCode = RestConstants.SWAGGER_CODE_CREATED,
                     description = RestConstants.SWAGGER_DESCRIPTION_EMPLOYEE_RELATION_REGISTERED,
-                    content =  @Content(schema = @Schema(implementation = RestaurantResponse.class))
+                    content =  @Content(schema = @Schema(implementation = EmployeeResponse.class))
             ),
             @ApiResponse(
                     responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
@@ -104,7 +107,7 @@ public class RestaurantController {
             @ApiResponse(
                     responseCode = RestConstants.SWAGGER_CODE_CREATED,
                     description = RestConstants.SWAGGER_DESCRIPTION_FOUND_PAGE_RESTAURANT,
-                    content =  @Content(schema = @Schema(implementation = RestaurantResponse.class))
+                    content =  @Content(schema = @Schema(implementation = PageResponse.class))
             ),
     })
     @GetMapping
@@ -112,6 +115,30 @@ public class RestaurantController {
         PaginationRequest pagination = PaginationRequest.build(query);
         return ResponseEntity.ok(
                 restaurantHandler.findPage(pagination)
+        );
+    }
+
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_FIND_RESTAURANT_DISHES)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CREATED,
+                    description = RestConstants.SWAGGER_DESCRIPTION_FOUND_RESTAURANT_DISHES,
+                    content =  @Content(schema = @Schema(implementation = PageResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_NOT_FOUND,
+                    description = RestConstants.SWAGGER_ERROR_RESTAURANT_DOES_NOT_FOUND,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+    })
+    @GetMapping("/{id}/dishes")
+    public ResponseEntity<PageResponse<DishResponse>> getRestaurantDishes(
+            @PathVariable String id,
+            @Nullable PageQuery query,
+            @Nullable DishFilterRequest filterRequest){
+        PaginationRequest pagination = PaginationRequest.build(query);
+        return ResponseEntity.ok(
+                restaurantHandler.findDishesOfRestaurant(id, pagination, filterRequest)
         );
     }
 }
