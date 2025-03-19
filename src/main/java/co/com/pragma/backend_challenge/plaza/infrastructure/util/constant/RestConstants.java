@@ -9,6 +9,9 @@ public class RestConstants {
 
     public static final String SWAGGER_SUMMARY_GET_DISHES = "Get dishes from the restaurant where work the actual user";
     public static final String SWAGGER_DESCRIPTION_FOUND_ORDERS = "Orders from the restaurant where retrieved, if there were";
+    public static final String SWAGGER_SUMMARY_SET_PREPARING_ORDER = "Set order as being in preparation";
+    public static final String SWAGGER_DESCRIPTION_SET_PREPARING_ORDER = "Order has been set in preparing";
+    public static final String SWAGGER_ERROR_ANOTHER_EMPLOYEE_IS_ATTENDING_ORDER = "Another employee is attending this order";
 
     private RestConstants() {
         throw new IllegalStateException("Utility Class");
@@ -58,4 +61,5 @@ public class RestConstants {
     public static final String SWAGGER_ERROR_DISH_DOES_NOT_BELONG_TO_RESTAURANT = "Given dish doesn't belong to the restaurant of the order";
     public static final String SWAGGER_ERROR_USER_ALREADY_HAS_A_PROCESSING_ORDER = "Customer already has a processing order currently";
     public static final String SWAGGER_ERROR_USER_DOES_NOT_WORK_AT_RESTAURANT = "Who made the petition, doesn't work in the restaurant";
+    public static final String SWAGGER_ERROR_ORDER_DOES_NOT_FOUND = "An order with that Id doesn't exists";
 }

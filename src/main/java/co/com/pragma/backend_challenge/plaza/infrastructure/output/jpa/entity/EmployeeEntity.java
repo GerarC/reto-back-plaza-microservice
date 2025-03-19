@@ -15,7 +15,7 @@ public class EmployeeEntity {
     @Column(name = "employee_id", nullable = false)
     private String id;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id", referencedColumnName = "restaurant_id", nullable = false)
     private RestaurantEntity restaurant;
 }

@@ -4,7 +4,6 @@ import co.com.pragma.backend_challenge.plaza.domain.util.enums.OrderState;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -23,7 +22,7 @@ public class OrderEntity {
     @Column(name = "customer_id", nullable = false)
     private String customerId;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderDishEntity> dishes;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
@@ -33,7 +32,7 @@ public class OrderEntity {
     @Column(name = "state", nullable = false)
     private OrderState state;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
     private EmployeeEntity assignedEmployee;
 

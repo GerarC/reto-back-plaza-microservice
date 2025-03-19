@@ -39,6 +39,11 @@ public class ExceptionAdvisor {
         return ExceptionResponseBuilder.buildResponse(e, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(OrderIsAlreadyAssignedException.class)
+    public ResponseEntity<ExceptionResponse> handleOrderIsAlreadyAssigned(OrderIsAlreadyAssignedException e){
+        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(RestaurantDoesNotBelongToUserException.class)
     public ResponseEntity<ExceptionResponse> handleRestaurantDoesNotBelongToUser(RestaurantDoesNotBelongToUserException e){
         return ExceptionResponseBuilder.buildResponse(e, HttpStatus.UNAUTHORIZED);

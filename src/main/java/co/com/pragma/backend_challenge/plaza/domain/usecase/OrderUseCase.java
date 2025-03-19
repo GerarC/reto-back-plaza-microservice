@@ -1,10 +1,7 @@
 package co.com.pragma.backend_challenge.plaza.domain.usecase;
 
 import co.com.pragma.backend_challenge.plaza.domain.api.OrderServicePort;
-import co.com.pragma.backend_challenge.plaza.domain.exception.CustomerAlreadyHasAProcessingOrderException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.DishDoesNotBelongToOrderRestaurantException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.EntityNotFoundException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.NotAuthorizedException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.*;
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
 import co.com.pragma.backend_challenge.plaza.domain.model.Employee;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
@@ -60,11 +57,28 @@ public class OrderUseCase implements OrderServicePort {
     @Override
     public DomainPage<Order> findOrders(OrderFilter filter, PaginationData paginationData) {
         AuthorizedUser user = getCurrentUser();
-        if(user.getRole() != RoleName.EMPLOYEE)
+        if (user.getRole() != RoleName.EMPLOYEE)
             throw new NotAuthorizedException();
         Employee employee = employeePersistencePort.findById(user.getId());
         filter.setRestaurantId(employee.getRestaurant().getId());
         return orderPersistencePort.findOrders(filter, paginationData);
+    }
+
+    @Override
+    public Order setAssignedEmployee(Long id) {
+        Order order = orderPersistencePort.findById(id);
+        if (order == null) throw new EntityNotFoundException(Order.class.getSimpleName(), id.toString());
+        if(order.getAssignedEmployee() != null) throw new OrderIsAlreadyAssignedException();
+
+        AuthorizedUser user = getCurrentUser();
+        if (user.getRole() != RoleName.EMPLOYEE) throw new NotAuthorizedException();
+
+        Employee employee = employeePersistencePort.findById(user.getId());
+        if (!Objects.equals(employee.getRestaurant().getId(), order.getRestaurant().getId()))
+            throw new NotAuthorizedException();
+        order.setAssignedEmployee(employee);
+        order.setState(OrderState.PREPARING);
+        return orderPersistencePort.updateOrder(order);
     }
 
     private void validateCustomerCanAddOrder(Order order, AuthorizedUser user) {
@@ -73,7 +87,7 @@ public class OrderUseCase implements OrderServicePort {
                 .customerId(user.getId())
                 .states(DomainConstants.PROCESS_STATES)
                 .build();
-        if(!orderPersistencePort.findFilteredOrders(filter).isEmpty())
+        if (!orderPersistencePort.findFilteredOrders(filter).isEmpty())
             throw new CustomerAlreadyHasAProcessingOrderException();
 
         // Restaurant Exists
@@ -89,20 +103,20 @@ public class OrderUseCase implements OrderServicePort {
      * Receives an OrderDish and a restaurant, verify that dish exists and belongs to the given restaurant.
      * Throws EntityNotFoundException and DishDoesNotBelongToRestaurantException.
      *
-     * @param orderDish an OrderDish with dishId and quantity.
+     * @param orderDish  an OrderDish with dishId and quantity.
      * @param restaurant a pre-found restaurant.
      */
-    private void validateOrderDish(OrderDish orderDish, Restaurant restaurant){
-        Dish dish =  dishPersistencePort.findById(orderDish.getDish().getId());
-        if(dish == null) throw new EntityNotFoundException(
+    private void validateOrderDish(OrderDish orderDish, Restaurant restaurant) {
+        Dish dish = dishPersistencePort.findById(orderDish.getDish().getId());
+        if (dish == null) throw new EntityNotFoundException(
                 Dish.class.getSimpleName(),
                 orderDish.getDish().getId().toString()
-    );
-        if(!Objects.equals(dish.getRestaurant().getId(), restaurant.getId()))
+        );
+        if (!Objects.equals(dish.getRestaurant().getId(), restaurant.getId()))
             throw new DishDoesNotBelongToOrderRestaurantException(dish.getName(), restaurant.getName());
     }
 
-    private AuthorizedUser getCurrentUser(){
+    private AuthorizedUser getCurrentUser() {
         return authorizationSecurityPort.authorize(
                 TokenHolder.getToken().substring(DomainConstants.TOKEN_PREFIX.length())
         );
