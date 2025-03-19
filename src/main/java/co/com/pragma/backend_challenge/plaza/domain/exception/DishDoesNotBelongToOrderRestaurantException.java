@@ -6,7 +6,7 @@ public class DishDoesNotBelongToOrderRestaurantException extends RuntimeExceptio
 
     public DishDoesNotBelongToOrderRestaurantException(String dishName, String restaurantName) {
         super(String.format(
-                DomainConstants.DISH_DOES_NOT_BELONG_TO_RESTAURANT,
+                DomainConstants.DISH_DOES_NOT_BELONG_TO_RESTAURANT_MESSAGE,
                 dishName, restaurantName
         ));
     }

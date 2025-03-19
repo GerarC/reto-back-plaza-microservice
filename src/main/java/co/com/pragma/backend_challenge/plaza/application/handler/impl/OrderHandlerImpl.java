@@ -43,4 +43,11 @@ public class OrderHandlerImpl implements OrderHandler {
                 orderServicePort.findOrders(filter, paginationData)
         );
     }
+
+    @Override
+    public OrderResponse setAssignedEmployee(Long id) {
+        return orderResponseMapper.toResponse(
+                orderServicePort.setAssignedEmployee(id)
+        );
+    }
 }

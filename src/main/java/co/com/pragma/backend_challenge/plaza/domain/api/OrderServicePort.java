@@ -10,4 +10,5 @@ import co.com.pragma.backend_challenge.plaza.domain.util.pagination.PaginationDa
 public interface OrderServicePort {
     Order createOrder(Order order);
     DomainPage<Order> findOrders(OrderFilter filter, PaginationData paginationData);
+    Order setAssignedEmployee(Long id);
 }

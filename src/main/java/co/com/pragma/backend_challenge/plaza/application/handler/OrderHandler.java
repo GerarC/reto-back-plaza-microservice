@@ -10,4 +10,5 @@ import co.com.pragma.backend_challenge.plaza.application.dto.response.order.Orde
 public interface OrderHandler {
     OrderCreatedResponse createOrder(OrderRequest orderRequest);
     PageResponse<OrderResponse> findOrders(OrderFilterRequest filter, PaginationRequest paginationRequest);
+    OrderResponse setAssignedEmployee(Long id);
 }

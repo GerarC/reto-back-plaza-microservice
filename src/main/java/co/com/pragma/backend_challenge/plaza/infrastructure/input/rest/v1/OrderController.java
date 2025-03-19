@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,11 +28,11 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderHandler orderHandler;
 
-    @Operation(summary = RestConstants.SWAGGER_SUMMARY_CREATE_DISH)
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_CREATE_ORDER)
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = RestConstants.SWAGGER_CODE_CREATED,
-                    description = RestConstants.SWAGGER_DESCRIPTION_CREATED_DISH,
+                    description = RestConstants.SWAGGER_DESCRIPTION_CREATED_ORDER,
                     content =  @Content(schema = @Schema(implementation = OrderCreatedResponse.class))
             ),
             @ApiResponse(
@@ -80,11 +81,20 @@ public class OrderController {
                     content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
     })
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
     @GetMapping
     public ResponseEntity<PageResponse<OrderResponse>> getOrders(OrderFilterRequest filter, PageQuery query){
         PaginationRequest paginationRequest = PaginationRequest.build(query);
         return ResponseEntity.ok(
                 orderHandler.findOrders(filter, paginationRequest)
+        );
+    }
+
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
+    @PatchMapping("/{id}/preparing")
+    public ResponseEntity<OrderResponse> setAssignedEmployee(@PathVariable Long id){
+        return ResponseEntity.ok(
+                orderHandler.setAssignedEmployee(id)
         );
     }
 
