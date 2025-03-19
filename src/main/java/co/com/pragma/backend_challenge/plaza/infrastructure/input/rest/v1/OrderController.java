@@ -1,8 +1,12 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.input.rest.v1;
 
+import co.com.pragma.backend_challenge.plaza.application.dto.request.filter.OrderFilterRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.order.OrderRequest;
-import co.com.pragma.backend_challenge.plaza.application.dto.response.DishResponse;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.PageQuery;
+import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.PaginationRequest;
+import co.com.pragma.backend_challenge.plaza.application.dto.response.PageResponse;
 import co.com.pragma.backend_challenge.plaza.application.dto.response.order.OrderCreatedResponse;
+import co.com.pragma.backend_challenge.plaza.application.dto.response.order.OrderResponse;
 import co.com.pragma.backend_challenge.plaza.application.handler.OrderHandler;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ExceptionResponse;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ValidationExceptionResponse;
@@ -60,6 +64,27 @@ public class OrderController {
     public ResponseEntity<OrderCreatedResponse> createOrder(@RequestBody OrderRequest orderRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 orderHandler.createOrder(orderRequest)
+        );
+    }
+
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_GET_DISHES)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_OK,
+                    description = RestConstants.SWAGGER_DESCRIPTION_FOUND_ORDERS,
+                    content =  @Content(schema = @Schema(implementation = OrderCreatedResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_UNAUTHORIZED,
+                    description = RestConstants.SWAGGER_ERROR_USER_DOES_NOT_WORK_AT_RESTAURANT,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+    })
+    @GetMapping
+    public ResponseEntity<PageResponse<OrderResponse>> getOrders(OrderFilterRequest filter, PageQuery query){
+        PaginationRequest paginationRequest = PaginationRequest.build(query);
+        return ResponseEntity.ok(
+                orderHandler.findOrders(filter, paginationRequest)
         );
     }
 

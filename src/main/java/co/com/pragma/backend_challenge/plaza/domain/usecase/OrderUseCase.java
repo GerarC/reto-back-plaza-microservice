@@ -4,7 +4,9 @@ import co.com.pragma.backend_challenge.plaza.domain.api.OrderServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.exception.CustomerAlreadyHasAProcessingOrderException;
 import co.com.pragma.backend_challenge.plaza.domain.exception.DishDoesNotBelongToOrderRestaurantException;
 import co.com.pragma.backend_challenge.plaza.domain.exception.EntityNotFoundException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.NotAuthorizedException;
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
+import co.com.pragma.backend_challenge.plaza.domain.model.Employee;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
 import co.com.pragma.backend_challenge.plaza.domain.model.order.Order;
 import co.com.pragma.backend_challenge.plaza.domain.model.order.OrderDish;
@@ -18,7 +20,10 @@ import co.com.pragma.backend_challenge.plaza.domain.util.DomainConstants;
 import co.com.pragma.backend_challenge.plaza.domain.util.GenerationUtils;
 import co.com.pragma.backend_challenge.plaza.domain.util.TokenHolder;
 import co.com.pragma.backend_challenge.plaza.domain.util.enums.OrderState;
+import co.com.pragma.backend_challenge.plaza.domain.util.enums.RoleName;
 import co.com.pragma.backend_challenge.plaza.domain.util.filter.OrderFilter;
+import co.com.pragma.backend_challenge.plaza.domain.util.pagination.DomainPage;
+import co.com.pragma.backend_challenge.plaza.domain.util.pagination.PaginationData;
 
 import java.util.Objects;
 
@@ -44,14 +49,22 @@ public class OrderUseCase implements OrderServicePort {
 
     @Override
     public Order createOrder(Order order) {
-        AuthorizedUser user = authorizationSecurityPort.authorize(
-                TokenHolder.getToken().substring(DomainConstants.TOKEN_PREFIX.length())
-        );
+        AuthorizedUser user = getCurrentUser();
         validateCustomerCanAddOrder(order, user);
         order.setState(OrderState.WAITING);
         order.setSecurityPin(GenerationUtils.generateRandomSecurityPin());
         order.setCustomerId(user.getId());
         return orderPersistencePort.saveOrder(order);
+    }
+
+    @Override
+    public DomainPage<Order> findOrders(OrderFilter filter, PaginationData paginationData) {
+        AuthorizedUser user = getCurrentUser();
+        if(user.getRole() != RoleName.EMPLOYEE)
+            throw new NotAuthorizedException();
+        Employee employee = employeePersistencePort.findById(user.getId());
+        filter.setRestaurantId(employee.getRestaurant().getId());
+        return orderPersistencePort.findOrders(filter, paginationData);
     }
 
     private void validateCustomerCanAddOrder(Order order, AuthorizedUser user) {
@@ -87,5 +100,11 @@ public class OrderUseCase implements OrderServicePort {
     );
         if(!Objects.equals(dish.getRestaurant().getId(), restaurant.getId()))
             throw new DishDoesNotBelongToOrderRestaurantException(dish.getName(), restaurant.getName());
+    }
+
+    private AuthorizedUser getCurrentUser(){
+        return authorizationSecurityPort.authorize(
+                TokenHolder.getToken().substring(DomainConstants.TOKEN_PREFIX.length())
+        );
     }
 }

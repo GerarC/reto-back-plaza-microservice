@@ -5,18 +5,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import co.com.pragma.backend_challenge.plaza.domain.exception.CustomerAlreadyHasAProcessingOrderException;
 import co.com.pragma.backend_challenge.plaza.domain.exception.EntityNotFoundException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.NotAuthorizedException;
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
+import co.com.pragma.backend_challenge.plaza.domain.model.Employee;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
 import co.com.pragma.backend_challenge.plaza.domain.model.order.Order;
 import co.com.pragma.backend_challenge.plaza.domain.model.order.OrderDish;
 import co.com.pragma.backend_challenge.plaza.domain.model.security.AuthorizedUser;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.EmployeePersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.OrderPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.RestaurantPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
 import co.com.pragma.backend_challenge.plaza.domain.util.TokenHolder;
 import co.com.pragma.backend_challenge.plaza.domain.util.enums.OrderState;
 import co.com.pragma.backend_challenge.plaza.domain.util.enums.RoleName;
+import co.com.pragma.backend_challenge.plaza.domain.util.filter.OrderFilter;
+import co.com.pragma.backend_challenge.plaza.domain.util.pagination.DomainPage;
+import co.com.pragma.backend_challenge.plaza.domain.util.pagination.PaginationData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -50,6 +56,8 @@ class OrderUseCaseTest {
     private DishPersistencePort dishPersistencePort;
     @Mock
     private AuthorizationSecurityPort authorizationSecurityPort;
+    @Mock
+    private EmployeePersistencePort employeePersistencePort;
 
     @InjectMocks
     private OrderUseCase orderUseCase;
@@ -124,4 +132,53 @@ class OrderUseCaseTest {
 
         assertThrows(EntityNotFoundException.class, () -> orderUseCase.createOrder(mockOrder));
     }
+
+    @Test
+    void findOrders_Success() {
+        AuthorizedUser mockEmployee = AuthorizedUser.builder()
+                .role(RoleName.EMPLOYEE)
+                .id(USER_ID)
+                .token(USER_TOKEN)
+                .build();
+
+        Employee mockEmployeeEntity = Employee.builder()
+                .id(USER_ID)
+                .restaurant(mockRestaurant)
+                .build();
+
+        OrderFilter filter = OrderFilter.builder().build();
+        PaginationData paginationData =  PaginationData.builder().page(0).pageSize(10).build();
+        DomainPage<Order> mockOrdersPage = DomainPage.<Order>builder()
+                .page(1)
+                .content(List.of(mockOrder))
+                .totalCount(1L)
+                .build();
+
+        when(authorizationSecurityPort.authorize(any())).thenReturn(mockEmployee);
+        when(employeePersistencePort.findById(USER_ID)).thenReturn(mockEmployeeEntity);
+        when(orderPersistencePort.findOrders(any(), any())).thenReturn(mockOrdersPage);
+
+        DomainPage<Order> result = orderUseCase.findOrders(filter, paginationData);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getTotalCount());
+        verify(orderPersistencePort).findOrders(any(), any());
+    }
+
+    @Test
+    void findOrders_NotAuthorized() {
+        AuthorizedUser mockCustomer = AuthorizedUser.builder()
+                .role(RoleName.CUSTOMER)
+                .id(USER_ID)
+                .token(USER_TOKEN)
+                .build();
+
+        when(authorizationSecurityPort.authorize(any())).thenReturn(mockCustomer);
+        OrderFilter filter = OrderFilter.builder().build();
+        PaginationData paginationData =  PaginationData.builder().page(0).pageSize(10).build();
+
+        assertThrows(NotAuthorizedException.class, () ->
+                orderUseCase.findOrders(filter, paginationData));
+    }
+
 }
