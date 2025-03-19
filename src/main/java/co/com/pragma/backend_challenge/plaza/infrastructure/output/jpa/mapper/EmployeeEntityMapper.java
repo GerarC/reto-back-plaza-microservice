@@ -14,7 +14,6 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface EmployeeEntityMapper {
     EmployeeEntity toEntity(Employee employee);
-    List<EmployeeEntity> toEntities(List<Employee> employees);
     Employee toDomain(EmployeeEntity entity);
     List<Employee> toDomains(List<EmployeeEntity> entities);
 }

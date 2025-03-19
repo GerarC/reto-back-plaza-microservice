@@ -1,7 +1,6 @@
 package co.com.pragma.backend_challenge.plaza.application.util;
 
 public class AppConstants {
-
     private AppConstants() {
         throw new IllegalStateException("Utility Class");
     }
@@ -24,6 +23,8 @@ public class AppConstants {
     public static final String CATEGORY_FIELD_NOT_NULL = "'category' field must not be null";
     public static final String IMAGE_URL_FIELD_NOT_NULL = "'category' field must not be null";
     public static final String EMPLOYEE_ID_FIELD_NOT_NULL =  "'employee id' field must not be null";
+    public static final String DISH_ID_FIELD_NOT_NULL = "'dish_id' field must not be null";
+    public static final String QUANTITY_FIELD_NOT_NULL = "'quantity' field must not be null";
 
 
     // Wrong pattern messages
@@ -33,4 +34,10 @@ public class AppConstants {
 
     // Positive number
     public static final String PRICE_MUST_BE_POSITIVE = "'price' must be a positive number";
+    public static final String QUANTITY_MUST_BE_POSITIVE = "'quantity' must be a positive number";
+
+    // Orders
+    public static final int MIN_ORDER_DISHES = 1;
+    public static final String AT_LEAST_ONE_DISH_IN_ORDER = "There should be at least one dish in the order";
+
 }

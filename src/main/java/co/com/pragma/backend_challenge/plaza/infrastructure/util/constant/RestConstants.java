@@ -7,6 +7,7 @@ import co.com.pragma.backend_challenge.plaza.domain.util.annotation.Generated;
 public class RestConstants {
 
 
+    public static final String SWAGGER_ERROR_USER_ALREADY_HAS_A_PROCESSING_ORDER = "Customer already has a processing order currently";
 
     private RestConstants() {
         throw new IllegalStateException("Utility Class");
@@ -48,4 +49,10 @@ public class RestConstants {
     public static final String SWAGGER_ERROR_DISH_NOT_FOUND = "Desired dish hasn't been found";
     public static final String SWAGGER_SUMMARY_CHANGED_DISH_STATE = "Change state of the given dish";
     public static final String SWAGGER_DESCRIPTION_CHANGED_DISH_STATE = "Dish state has been changed";
+
+    //Order
+    public static final String SWAGGER_SUMMARY_CREATE_ORDER = "Creates an order after a lot of validations";
+    public static final String SWAGGER_DESCRIPTION_CREATED_ORDER = "The order has been created successfully";
+    public static final String SWAGGER_ERROR_DISH_DOES_NOT_FOUND = "At least one the dishes has not been found";
+    public static final String SWAGGER_ERROR_DISH_DOES_NOT_BELONG_TO_RESTAURANT = "Given dish doesn't belong to the restaurant of the order";
 }
