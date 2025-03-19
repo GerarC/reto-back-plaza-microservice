@@ -90,6 +90,29 @@ public class OrderController {
         );
     }
 
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_SET_PREPARING_ORDER)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CREATED,
+                    description = RestConstants.SWAGGER_DESCRIPTION_SET_PREPARING_ORDER,
+                    content =  @Content(schema = @Schema(implementation = OrderCreatedResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_NOT_FOUND,
+                    description = RestConstants.SWAGGER_ERROR_ORDER_DOES_NOT_FOUND,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
+                    description = RestConstants.SWAGGER_ERROR_ANOTHER_EMPLOYEE_IS_ATTENDING_ORDER,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_BAD_REQUEST,
+                    description = RestConstants.SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS,
+                    content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))
+            ),
+    })
     @PreAuthorize("hasAnyRole('EMPLOYEE')")
     @PatchMapping("/{id}/preparing")
     public ResponseEntity<OrderResponse> setAssignedEmployee(@PathVariable Long id){

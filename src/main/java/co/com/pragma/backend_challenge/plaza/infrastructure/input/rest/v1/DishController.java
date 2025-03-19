@@ -26,12 +26,11 @@ import org.springframework.web.bind.annotation.*;
 public class DishController {
     private final DishHandler dishHandler;
 
-
-    @Operation(summary = RestConstants.SWAGGER_SUMMARY_CREATE_ORDER)
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_CREATE_DISH)
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = RestConstants.SWAGGER_CODE_CREATED,
-                    description = RestConstants.SWAGGER_DESCRIPTION_CREATED_ORDER,
+                    description = RestConstants.SWAGGER_DESCRIPTION_CREATED_DISH,
                     content =  @Content(schema = @Schema(implementation = DishResponse.class))
             ),
             @ApiResponse(
