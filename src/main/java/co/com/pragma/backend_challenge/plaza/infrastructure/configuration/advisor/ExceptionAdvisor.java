@@ -1,13 +1,9 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor;
 
-import co.com.pragma.backend_challenge.plaza.domain.exception.EntityAlreadyExistsException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.NotAuthorizedException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.RestaurantDoesNotBelongToUserException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.UserRoleMustBeOwnerException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.*;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ExceptionResponse;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ValidationExceptionResponse;
 import co.com.pragma.backend_challenge.plaza.infrastructure.util.ExceptionResponseBuilder;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,6 +14,15 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class ExceptionAdvisor {
+    @ExceptionHandler(CustomerAlreadyHasAProcessingOrderException.class)
+    public ResponseEntity<ExceptionResponse> handleCustomerAlreadyHasAProcessingOrder(CustomerAlreadyHasAProcessingOrderException e){
+        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DishDoesNotBelongToOrderRestaurantException.class)
+    public ResponseEntity<ExceptionResponse> handleDishDoesNotBelongToOrderRestaurant(DishDoesNotBelongToOrderRestaurantException e){
+        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
+    }
 
     @ExceptionHandler(EntityAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleEntityAlreadyExists(EntityAlreadyExistsException e){

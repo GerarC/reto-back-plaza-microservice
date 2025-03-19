@@ -14,7 +14,6 @@ import java.util.List;
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface DishCategoryEntityMapper {
     DishCategoryEntity toEntity(DishCategory dishCategory);
-    List<DishCategoryEntity> toEntities(List<DishCategory> dishCategories);
     DishCategory toDomain(DishCategoryEntity entity);
     List<DishCategory> toDomains(List<DishCategoryEntity> categoryEntities);
 }

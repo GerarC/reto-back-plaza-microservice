@@ -1,11 +1,13 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.configuration;
 
 import co.com.pragma.backend_challenge.plaza.domain.api.DishServicePort;
+import co.com.pragma.backend_challenge.plaza.domain.api.OrderServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.api.RestaurantServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.api.security.AuthorizationServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.*;
 import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
 import co.com.pragma.backend_challenge.plaza.domain.usecase.DishUseCase;
+import co.com.pragma.backend_challenge.plaza.domain.usecase.OrderUseCase;
 import co.com.pragma.backend_challenge.plaza.domain.usecase.RestaurantUseCase;
 import co.com.pragma.backend_challenge.plaza.domain.usecase.security.AuthorizationUseCase;
 import co.com.pragma.backend_challenge.plaza.domain.util.annotation.Generated;
@@ -57,6 +59,23 @@ public class BeanConfiguration {
             AuthorizationSecurityPort authorizationSecurityPort
     ) {
         return new AuthorizationUseCase(authorizationSecurityPort);
+    }
+
+    @Bean
+    public OrderServicePort orderServicePort(
+            OrderPersistencePort orderPersistencePort,
+            RestaurantPersistencePort restaurantPersistencePort,
+            AuthorizationSecurityPort authorizationSecurityPort,
+            DishPersistencePort dishPersistencePort,
+            EmployeePersistencePort employeePersistencePort
+    ){
+        return new OrderUseCase(
+                orderPersistencePort,
+                restaurantPersistencePort,
+                authorizationSecurityPort,
+                dishPersistencePort,
+                employeePersistencePort
+        );
     }
 
 
