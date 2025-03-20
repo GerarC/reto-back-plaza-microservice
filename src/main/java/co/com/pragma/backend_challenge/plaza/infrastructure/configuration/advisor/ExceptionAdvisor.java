@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class ExceptionAdvisor {
+    public static final String NULL_MESSAGE = "null";
+    public static final String COLON = ": ";
+
     @ExceptionHandler(CustomerAlreadyHasAProcessingOrderException.class)
     public ResponseEntity<ExceptionResponse> handleCustomerAlreadyHasAProcessingOrder(CustomerAlreadyHasAProcessingOrderException e){
         return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
@@ -44,8 +47,18 @@ public class ExceptionAdvisor {
         return ExceptionResponseBuilder.buildResponse(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(OrderDoesNotBelongToTheCustomerException.class)
+    public ResponseEntity<ExceptionResponse> handleOrderDoesNotBelongToTheCustomer(OrderDoesNotBelongToTheCustomerException e){
+        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(OrderIsAssignedToAnotherEmployeeException.class)
     public ResponseEntity<ExceptionResponse> handleOrderIsAlreadyAssigned(OrderIsAssignedToAnotherEmployeeException e){
+        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(OrderIsBeingPreparedException.class)
+    public ResponseEntity<ExceptionResponse> handleOrderIsBeingPrepared(OrderIsBeingPreparedException e){
         return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
     }
 
@@ -82,8 +95,8 @@ public class ExceptionAdvisor {
                 .timestamp(LocalDateTime.now())
                 .errors(e.getFieldErrors().stream().map(field -> {
                     StringBuilder sb = new StringBuilder();
-                    String rejectedValue = field.getRejectedValue() == null ? "null" : field.getRejectedValue().toString();
-                    sb.append(field.getDefaultMessage()).append(": ").append(rejectedValue);
+                    String rejectedValue = field.getRejectedValue() == null ? NULL_MESSAGE : field.getRejectedValue().toString();
+                    sb.append(field.getDefaultMessage()).append(COLON).append(rejectedValue);
                     return sb.toString();
                 }).toList())
                 .message(e.getBody().getDetail()).build();

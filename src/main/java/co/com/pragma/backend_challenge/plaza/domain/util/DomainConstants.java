@@ -8,9 +8,6 @@ import java.util.List;
 @Generated
 public class DomainConstants {
 
-    public static final String ORDER_IS_NOT_DONE = "The order is not done, you can give it to the customer";
-    public static final String GIVEN_SECURITY_PIN_DOESN_T_MATCH_WITH_THIS_ORDER = "Given security pin doesn't match with this order";
-
     private DomainConstants() {
         throw new IllegalStateException("Utility Class");
     }
@@ -44,5 +41,10 @@ public class DomainConstants {
     public static final String ALREADY_ASSIGNED_TO_ANOTHER_EMPLOYEE_MESSAGE = "The chosen order is assigned to another employee";
     public static final String NOTIFICATION_SERVICE_IS_NOT_AVAILABLE = "Notification service is not available, something wrong occurred, order status was not changed";
     public static final String ORDER_CANNOT_BE_SET_AS_DONE_BECAUSE_IS_NOT_BEING_PREPARED = "Order cannot be set as  Done because is not being prepared";
+    public static final String ORDER_IS_NOT_DONE = "The order is not done, you can give it to the customer";
+    public static final String SECURITY_PIN_DOES_NOT_MATCH = "Given security pin doesn't match with this order";
+    public static final String ORDER_DOES_NOT_BELONG_TO_THE_USER = "Order cannot be change because doesn't belong to the user";
+    public static final String ORDER_CANNOT_BE_CANCELED = "Order is being prepared, cannot be canceled";
+
 
 }

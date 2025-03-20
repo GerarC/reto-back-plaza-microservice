@@ -172,7 +172,7 @@ public class OrderController {
             ),
             @ApiResponse(
                     responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
-                    description = RestConstants.SWAGGER_ERROR_ANOTHER_ORDER_IS_NOT_DONE,
+                    description = RestConstants.SWAGGER_ERROR_ORDER_IS_NOT_DONE,
                     content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
             @ApiResponse(
@@ -186,6 +186,37 @@ public class OrderController {
     public ResponseEntity<OrderResponse> setOrderAsReceived(@PathVariable Long id, OrderPinRequest pinRequest){
         return ResponseEntity.ok(
                 orderHandler.setOrderAsDelivered(id, pinRequest)
+        );
+    }
+
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_SET_CANCELED_ORDER)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CREATED,
+                    description = RestConstants.SWAGGER_DESCRIPTION_SET_CANCELED_ORDER,
+                    content =  @Content(schema = @Schema(implementation = OrderCreatedResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_NOT_FOUND,
+                    description = RestConstants.SWAGGER_ERROR_ORDER_DOES_NOT_FOUND,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
+                    description = RestConstants.SWAGGER_ERROR_ORDER_IS_BEING_PREPARED,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_BAD_REQUEST,
+                    description = RestConstants.SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS,
+                    content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))
+            ),
+    })
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    @PatchMapping("/{id}/canceled")
+    public ResponseEntity<OrderResponse> setOrderAsCanceled(@PathVariable Long id){
+        return ResponseEntity.ok(
+                orderHandler.setOrderAsCanceled(id)
         );
     }
 }

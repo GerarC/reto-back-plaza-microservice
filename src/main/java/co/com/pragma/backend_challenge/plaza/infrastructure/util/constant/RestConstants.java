@@ -7,6 +7,10 @@ import co.com.pragma.backend_challenge.plaza.domain.util.annotation.Generated;
 public class RestConstants {
 
 
+    public static final String SWAGGER_SUMMARY_SET_CANCELED_ORDER = "Set the order as canceled";
+    public static final String SWAGGER_DESCRIPTION_SET_CANCELED_ORDER = "The order has been canceled successfully";
+    public static final String SWAGGER_ERROR_ORDER_IS_BEING_PREPARED = "The order could not be canceled because is being prepared";
+
     private RestConstants() {
         throw new IllegalStateException("Utility Class");
     }
@@ -65,6 +69,6 @@ public class RestConstants {
     public static final String SWAGGER_DESCRIPTION_SET_DONE_ORDER = "Order has been set as done";
     public static final String SWAGGER_SUMMARY_SET_DELIVERED_ORDER = "Set order as delivered to the customer";
     public static final String SWAGGER_DESCRIPTION_SET_DELIVERED_ORDER = "Order has been set as delivered";
-    public static final String SWAGGER_ERROR_ANOTHER_ORDER_IS_NOT_DONE = "Order is not done, so, cannot be delivered";
+    public static final String SWAGGER_ERROR_ORDER_IS_NOT_DONE = "Order is not done, so, cannot be delivered";
 
 }

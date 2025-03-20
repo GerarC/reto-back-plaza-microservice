@@ -123,6 +123,18 @@ public class OrderUseCase implements OrderServicePort {
         return orderPersistencePort.updateOrder(order);
     }
 
+    @Override
+    public Order setOrderAsCanceled(Long id) {
+        AuthorizedUser user = getCurrentUser();
+        if (user.getRole() != RoleName.CUSTOMER) throw new NotAuthorizedException();
+        Order order = getOrder(id);
+        if (!Objects.equals(order.getCustomerId(), user.getId())) throw new OrderDoesNotBelongToTheCustomerException();
+        if (order.getState() != OrderState.WAITING) throw new OrderIsBeingPreparedException();
+
+        order.setState(OrderState.CANCELED);
+        return orderPersistencePort.updateOrder(order);
+    }
+
     private void validateCustomerCanAddOrder(Order order, AuthorizedUser user) {
         // Current user has not another processing order
         OrderFilter filter = OrderFilter.builder()
