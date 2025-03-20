@@ -72,8 +72,7 @@ public class OrderUseCase implements OrderServicePort {
 
     @Override
     public Order setAssignedEmployee(Long id) {
-        Order order = orderPersistencePort.findById(id);
-        if (order == null) throw new EntityNotFoundException(Order.class.getSimpleName(), id.toString());
+        Order order = getOrder(id);
         if (order.getAssignedEmployee() != null) throw new OrderIsAssignedToAnotherEmployeeException();
 
         AuthorizedUser user = getCurrentUser();
@@ -91,21 +90,36 @@ public class OrderUseCase implements OrderServicePort {
     public Order setOrderAsDone(Long id) {
         AuthorizedUser user = getCurrentUser();
         if (user.getRole() != RoleName.EMPLOYEE) throw new NotAuthorizedException();
-        Order order = orderPersistencePort.findById(id);
-        if (order == null) throw new EntityNotFoundException(Order.class.getSimpleName(), id.toString());
+        Order order = getOrder(id);
 
-        if (!Objects.equals(order.getAssignedEmployee().getId(), user.getId())) throw new OrderIsAssignedToAnotherEmployeeException();
+        if (!Objects.equals(order.getAssignedEmployee().getId(), user.getId()))
+            throw new OrderIsAssignedToAnotherEmployeeException();
         if (order.getState() != OrderState.PREPARING) throw new OrderIsNotInPreparationStateException();
 
         try {
             notificationSenderPort.sendNotification(
                     buildNotification(order.getCustomerId(), order.getSecurityPin())
             );
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new NotificationWasNotSentException();
         }
 
         order.setState(OrderState.DONE);
+        return orderPersistencePort.updateOrder(order);
+    }
+
+    @Override
+    public Order setOrderAsDelivered(Long id, String securityPin) {
+        AuthorizedUser user = getCurrentUser();
+        if (user.getRole() != RoleName.EMPLOYEE) throw new NotAuthorizedException();
+        Order order = getOrder(id);
+
+        if (!Objects.equals(order.getAssignedEmployee().getId(), user.getId()))
+            throw new OrderIsAssignedToAnotherEmployeeException();
+        if (order.getState() != OrderState.DONE) throw new OrderIsNotDoneException();
+        if (!Objects.equals(securityPin, order.getSecurityPin())) throw new SecurityPinDoesNotMatchException();
+
+        order.setState(OrderState.DELIVERED);
         return orderPersistencePort.updateOrder(order);
     }
 
@@ -158,5 +172,11 @@ public class OrderUseCase implements OrderServicePort {
                         DomainConstants.NOTIFICATION_MESSAGE_TEMPLATE,
                         user.getName(), user.getLastname(), code))
                 .build();
+    }
+
+    private Order getOrder(Long id) {
+        Order order = orderPersistencePort.findById(id);
+        if (order == null) throw new EntityNotFoundException(Order.class.getSimpleName(), id.toString());
+        return order;
     }
 }

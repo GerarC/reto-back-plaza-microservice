@@ -8,6 +8,9 @@ import java.util.List;
 @Generated
 public class DomainConstants {
 
+    public static final String ORDER_IS_NOT_DONE = "The order is not done, you can give it to the customer";
+    public static final String GIVEN_SECURITY_PIN_DOESN_T_MATCH_WITH_THIS_ORDER = "Given security pin doesn't match with this order";
+
     private DomainConstants() {
         throw new IllegalStateException("Utility Class");
     }

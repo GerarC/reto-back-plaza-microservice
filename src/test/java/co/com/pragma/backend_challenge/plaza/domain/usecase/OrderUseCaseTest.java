@@ -46,12 +46,14 @@ class OrderUseCaseTest {
     private static final String CUSTOMER_PHONE = "9876543210";
     private static final String CUSTOMER_NAME = "John";
     private static final String CUSTOMER_LASTNAME = "Doe";
+    private static final String INVALID_SECURITY_PIN = "0000";
 
     private static final AuthorizedUser mockUser = AuthorizedUser.builder()
             .role(USER_ROLE)
             .token(USER_TOKEN)
             .id(USER_ID)
             .build();
+    public static final String DIFFERENT_EMPLOYEE_ID = "DIFFERENT_EMPLOYEE";
 
     @Mock
     private OrderPersistencePort orderPersistencePort;
@@ -227,7 +229,7 @@ class OrderUseCaseTest {
     }
 
     @Test
-    void shouldThrowNotAuthorizedException_WhenUserIsNotEmployee() {
+    void orderDone_shouldThrowNotAuthorizedException_WhenUserIsNotEmployee() {
         // Given
         AuthorizedUser unauthorizedUser = AuthorizedUser.builder()
                 .id("USER_123")
@@ -242,7 +244,7 @@ class OrderUseCaseTest {
     }
 
     @Test
-    void shouldThrowEntityNotFoundException_WhenOrderNotFound() {
+    void orderDone_shouldThrowEntityNotFoundException_WhenOrderNotFound() {
         // Given
         AuthorizedUser employee = AuthorizedUser.builder()
                 .id(EMPLOYEE_ID)
@@ -257,7 +259,7 @@ class OrderUseCaseTest {
     }
 
     @Test
-    void shouldThrowOrderIsAssignedToAnotherEmployeeException_WhenEmployeeMismatch() {
+    void orderDone_shouldThrowOrderIsAssignedToAnotherEmployeeException_WhenEmployeeMismatch() {
         // Given
         AuthorizedUser employee = AuthorizedUser.builder()
                 .id("DIFFERENT_EMPLOYEE")
@@ -278,7 +280,7 @@ class OrderUseCaseTest {
     }
 
     @Test
-    void shouldThrowOrderIsNotInPreparationStateException_WhenOrderNotPreparing() {
+    void orderDone_shouldThrowOrderIsNotInPreparationStateException_WhenOrderNotPreparing() {
         // Given
         AuthorizedUser employee = AuthorizedUser.builder()
                 .id(EMPLOYEE_ID)
@@ -299,7 +301,7 @@ class OrderUseCaseTest {
     }
 
     @Test
-    void shouldThrowNotificationWasNotSentException_WhenNotificationFails() {
+    void orderDone_shouldThrowNotificationWasNotSentException_WhenNotificationFails() {
         // Given
         AuthorizedUser employee = AuthorizedUser.builder()
                 .id(EMPLOYEE_ID)
@@ -327,6 +329,122 @@ class OrderUseCaseTest {
 
         // When & Then
         assertThrows(NotificationWasNotSentException.class, () -> orderUseCase.setOrderAsDone(1L));
+    }
+    @Test
+    void shouldSetOrderAsDeliveredSuccessfully() {
+        // Given
+        AuthorizedUser employee = AuthorizedUser.builder()
+                .id(EMPLOYEE_ID)
+                .role(RoleName.EMPLOYEE)
+                .build();
+
+        Order order = Order.builder()
+                .id(ORDER_ID)
+                .assignedEmployee(Employee.builder().id(EMPLOYEE_ID).build())
+                .state(OrderState.DONE)
+                .securityPin(SECURITY_PIN)
+                .build();
+
+        when(authorizationSecurityPort.authorize(anyString())).thenReturn(employee);
+        when(orderPersistencePort.findById(ORDER_ID)).thenReturn(order);
+        when(orderPersistencePort.updateOrder(any(Order.class))).thenReturn(order);
+
+        // When
+        Order result = orderUseCase.setOrderAsDelivered(ORDER_ID, SECURITY_PIN);
+
+        // Then
+        assertEquals(OrderState.DELIVERED, result.getState());
+        verify(orderPersistencePort, times(1)).updateOrder(any(Order.class));
+    }
+
+    @Test
+    void orderDelivered_shouldThrowNotAuthorizedException_WhenUserIsNotEmployee() {
+        // Given
+        AuthorizedUser unauthorizedUser = AuthorizedUser.builder()
+                .id("USER_123")
+                .role(RoleName.CUSTOMER)
+                .build();
+
+        when(authorizationSecurityPort.authorize(anyString())).thenReturn(unauthorizedUser);
+
+        // When & Then
+        assertThrows(NotAuthorizedException.class, () -> orderUseCase.setOrderAsDelivered(ORDER_ID, SECURITY_PIN));
+        verifyNoInteractions(orderPersistencePort);
+    }
+
+    @Test
+    void orderDelivered_shouldThrowEntityNotFoundException_WhenOrderNotFound() {
+        // Given
+        AuthorizedUser employee = AuthorizedUser.builder()
+                .id(EMPLOYEE_ID)
+                .role(RoleName.EMPLOYEE)
+                .build();
+
+        when(authorizationSecurityPort.authorize(anyString())).thenReturn(employee);
+        when(orderPersistencePort.findById(ORDER_ID)).thenReturn(null);
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, () -> orderUseCase.setOrderAsDelivered(ORDER_ID, SECURITY_PIN));
+    }
+
+    @Test
+    void orderDelivered_shouldThrowOrderIsAssignedToAnotherEmployeeException_WhenEmployeeMismatch() {
+        AuthorizedUser employee = AuthorizedUser.builder()
+                .id(DIFFERENT_EMPLOYEE_ID)
+                .role(RoleName.EMPLOYEE)
+                .build();
+
+        Order order = Order.builder()
+                .id(ORDER_ID)
+                .assignedEmployee(Employee.builder().id(EMPLOYEE_ID).build())
+                .state(OrderState.DONE)
+                .securityPin(SECURITY_PIN)
+                .build();
+
+        when(authorizationSecurityPort.authorize(anyString())).thenReturn(employee);
+        when(orderPersistencePort.findById(ORDER_ID)).thenReturn(order);
+
+        assertThrows(OrderIsAssignedToAnotherEmployeeException.class, () -> orderUseCase.setOrderAsDelivered(ORDER_ID, SECURITY_PIN));
+    }
+
+    @Test
+    void orderDelivered_shouldThrowOrderIsNotDoneException_WhenOrderNotInDoneState() {
+        AuthorizedUser employee = AuthorizedUser.builder()
+                .id(EMPLOYEE_ID)
+                .role(RoleName.EMPLOYEE)
+                .build();
+
+        Order order = Order.builder()
+                .id(ORDER_ID)
+                .assignedEmployee(Employee.builder().id(EMPLOYEE_ID).build())
+                .state(OrderState.PREPARING) // Not DONE
+                .securityPin(SECURITY_PIN)
+                .build();
+
+        when(authorizationSecurityPort.authorize(anyString())).thenReturn(employee);
+        when(orderPersistencePort.findById(ORDER_ID)).thenReturn(order);
+
+        assertThrows(OrderIsNotDoneException.class, () -> orderUseCase.setOrderAsDelivered(ORDER_ID, SECURITY_PIN));
+    }
+
+    @Test
+    void orderDelivered_shouldThrowSecurityPinDoesNotMatch_WhenPinIsIncorrect() {
+        AuthorizedUser employee = AuthorizedUser.builder()
+                .id(EMPLOYEE_ID)
+                .role(RoleName.EMPLOYEE)
+                .build();
+
+        Order order = Order.builder()
+                .id(ORDER_ID)
+                .assignedEmployee(Employee.builder().id(EMPLOYEE_ID).build())
+                .state(OrderState.DONE)
+                .securityPin(SECURITY_PIN)
+                .build();
+
+        when(authorizationSecurityPort.authorize(anyString())).thenReturn(employee);
+        when(orderPersistencePort.findById(ORDER_ID)).thenReturn(order);
+
+        assertThrows(SecurityPinDoesNotMatchException.class, () -> orderUseCase.setOrderAsDelivered(ORDER_ID, INVALID_SECURITY_PIN));
     }
 
 }
