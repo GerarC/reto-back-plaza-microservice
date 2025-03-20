@@ -7,11 +7,9 @@ import co.com.pragma.backend_challenge.plaza.domain.util.annotation.Generated;
 public class RestConstants {
 
 
-    public static final String SWAGGER_SUMMARY_GET_DISHES = "Get dishes from the restaurant where work the actual user";
-    public static final String SWAGGER_DESCRIPTION_FOUND_ORDERS = "Orders from the restaurant where retrieved, if there were";
-    public static final String SWAGGER_SUMMARY_SET_PREPARING_ORDER = "Set order as being in preparation";
-    public static final String SWAGGER_DESCRIPTION_SET_PREPARING_ORDER = "Order has been set in preparing";
-    public static final String SWAGGER_ERROR_ANOTHER_EMPLOYEE_IS_ATTENDING_ORDER = "Another employee is attending this order";
+    public static final String SWAGGER_SUMMARY_SET_CANCELED_ORDER = "Set the order as canceled";
+    public static final String SWAGGER_DESCRIPTION_SET_CANCELED_ORDER = "The order has been canceled successfully";
+    public static final String SWAGGER_ERROR_ORDER_IS_BEING_PREPARED = "The order could not be canceled because is being prepared";
 
     private RestConstants() {
         throw new IllegalStateException("Utility Class");
@@ -45,6 +43,7 @@ public class RestConstants {
     public static final String SWAGGER_DESCRIPTION_FOUND_RESTAURANT_DISHES = "Dishes of that restaurant where found";
 
     // Dish
+    public static final String SWAGGER_SUMMARY_GET_DISHES = "Get dishes from the restaurant where work the actual user";
     public static final String SWAGGER_SUMMARY_CREATE_DISH = "Creates a new dish for a restaurant";
     public static final String SWAGGER_DESCRIPTION_CREATED_DISH = "The dish has been created";
     public static final String SWAGGER_ERROR_RESTAURANT_DOES_NOT_FOUND = "A restaurant with that Id doesn't exists";
@@ -62,4 +61,14 @@ public class RestConstants {
     public static final String SWAGGER_ERROR_USER_ALREADY_HAS_A_PROCESSING_ORDER = "Customer already has a processing order currently";
     public static final String SWAGGER_ERROR_USER_DOES_NOT_WORK_AT_RESTAURANT = "Who made the petition, doesn't work in the restaurant";
     public static final String SWAGGER_ERROR_ORDER_DOES_NOT_FOUND = "An order with that Id doesn't exists";
+    public static final String SWAGGER_DESCRIPTION_FOUND_ORDERS = "Orders from the restaurant where retrieved, if there were";
+    public static final String SWAGGER_SUMMARY_SET_PREPARING_ORDER = "Set order as being in preparation";
+    public static final String SWAGGER_DESCRIPTION_SET_PREPARING_ORDER = "Order has been set in preparing";
+    public static final String SWAGGER_ERROR_ANOTHER_EMPLOYEE_IS_ATTENDING_ORDER = "Another employee is attending this order";
+    public static final String SWAGGER_SUMMARY_SET_DONE_ORDER = "Set a preparing order as done";
+    public static final String SWAGGER_DESCRIPTION_SET_DONE_ORDER = "Order has been set as done";
+    public static final String SWAGGER_SUMMARY_SET_DELIVERED_ORDER = "Set order as delivered to the customer";
+    public static final String SWAGGER_DESCRIPTION_SET_DELIVERED_ORDER = "Order has been set as delivered";
+    public static final String SWAGGER_ERROR_ORDER_IS_NOT_DONE = "Order is not done, so, cannot be delivered";
+
 }

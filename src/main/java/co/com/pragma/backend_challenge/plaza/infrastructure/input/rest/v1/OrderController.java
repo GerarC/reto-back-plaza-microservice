@@ -1,5 +1,6 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.input.rest.v1;
 
+import co.com.pragma.backend_challenge.plaza.application.dto.request.OrderPinRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.filter.OrderFilterRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.order.OrderRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.PageQuery;
@@ -121,4 +122,101 @@ public class OrderController {
         );
     }
 
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_SET_DONE_ORDER)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CREATED,
+                    description = RestConstants.SWAGGER_DESCRIPTION_SET_DONE_ORDER,
+                    content =  @Content(schema = @Schema(implementation = OrderCreatedResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_NOT_FOUND,
+                    description = RestConstants.SWAGGER_ERROR_ORDER_DOES_NOT_FOUND,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
+                    description = RestConstants.SWAGGER_ERROR_ANOTHER_EMPLOYEE_IS_ATTENDING_ORDER,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_BAD_REQUEST,
+                    description = RestConstants.SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS,
+                    content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))
+            ),
+    })
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
+    @PatchMapping("/{id}/done")
+    public ResponseEntity<OrderResponse> setOrderAsDone(@PathVariable Long id){
+        return ResponseEntity.ok(
+                orderHandler.setOrderAsDone(id)
+        );
+    }
+
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_SET_DELIVERED_ORDER)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CREATED,
+                    description = RestConstants.SWAGGER_DESCRIPTION_SET_DELIVERED_ORDER,
+                    content =  @Content(schema = @Schema(implementation = OrderCreatedResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_NOT_FOUND,
+                    description = RestConstants.SWAGGER_ERROR_ORDER_DOES_NOT_FOUND,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
+                    description = RestConstants.SWAGGER_ERROR_ANOTHER_EMPLOYEE_IS_ATTENDING_ORDER,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
+                    description = RestConstants.SWAGGER_ERROR_ORDER_IS_NOT_DONE,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_BAD_REQUEST,
+                    description = RestConstants.SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS,
+                    content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))
+            ),
+    })
+    @PreAuthorize("hasAnyRole('EMPLOYEE')")
+    @PatchMapping("/{id}/delivered")
+    public ResponseEntity<OrderResponse> setOrderAsReceived(@PathVariable Long id, OrderPinRequest pinRequest){
+        return ResponseEntity.ok(
+                orderHandler.setOrderAsDelivered(id, pinRequest)
+        );
+    }
+
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_SET_CANCELED_ORDER)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CREATED,
+                    description = RestConstants.SWAGGER_DESCRIPTION_SET_CANCELED_ORDER,
+                    content =  @Content(schema = @Schema(implementation = OrderCreatedResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_NOT_FOUND,
+                    description = RestConstants.SWAGGER_ERROR_ORDER_DOES_NOT_FOUND,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CONFLICT,
+                    description = RestConstants.SWAGGER_ERROR_ORDER_IS_BEING_PREPARED,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_BAD_REQUEST,
+                    description = RestConstants.SWAGGER_ERROR_VALIDATIONS_DO_NOT_PASS,
+                    content =  @Content(schema = @Schema(implementation = ValidationExceptionResponse.class))
+            ),
+    })
+    @PreAuthorize("hasAnyRole('CUSTOMER')")
+    @PatchMapping("/{id}/canceled")
+    public ResponseEntity<OrderResponse> setOrderAsCanceled(@PathVariable Long id){
+        return ResponseEntity.ok(
+                orderHandler.setOrderAsCanceled(id)
+        );
+    }
 }

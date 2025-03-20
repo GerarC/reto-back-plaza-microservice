@@ -10,4 +10,5 @@ public class FeignConstants {
 
     public static final String USER_CLIENT_NAME = "USER-CLIENT";
     public static final String AUTH_CLIENT_NAME = "AUTH-CLIENT";
+    public static final String NOTIFICATION_CLIENT_NAME = "NOTIFICATION-CLIENT";
 }

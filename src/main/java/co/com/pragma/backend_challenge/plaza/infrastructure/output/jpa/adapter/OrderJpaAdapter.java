@@ -1,6 +1,5 @@
 package co.com.pragma.backend_challenge.plaza.infrastructure.output.jpa.adapter;
 
-import co.com.pragma.backend_challenge.plaza.application.dto.response.RestaurantResponse;
 import co.com.pragma.backend_challenge.plaza.domain.model.order.Order;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.OrderPersistencePort;
 import co.com.pragma.backend_challenge.plaza.domain.util.filter.OrderFilter;

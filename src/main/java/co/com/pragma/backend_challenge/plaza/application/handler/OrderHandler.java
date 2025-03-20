@@ -1,5 +1,6 @@
 package co.com.pragma.backend_challenge.plaza.application.handler;
 
+import co.com.pragma.backend_challenge.plaza.application.dto.request.OrderPinRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.filter.OrderFilterRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.order.OrderRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.PaginationRequest;
@@ -11,4 +12,7 @@ public interface OrderHandler {
     OrderCreatedResponse createOrder(OrderRequest orderRequest);
     PageResponse<OrderResponse> findOrders(OrderFilterRequest filter, PaginationRequest paginationRequest);
     OrderResponse setAssignedEmployee(Long id);
+    OrderResponse setOrderAsDone(Long id);
+    OrderResponse setOrderAsDelivered(Long id, OrderPinRequest pinRequest);
+    OrderResponse setOrderAsCanceled(Long id);
 }
