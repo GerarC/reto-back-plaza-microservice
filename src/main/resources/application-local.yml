@@ -35,6 +35,8 @@ server:
 mall:
     user:
         base-url: localhost:8099/mall/v1
+    notification:
+        base-url: localhost:8097/mall/v1
 
 
 allowed-origins:

@@ -2,16 +2,16 @@ package co.com.pragma.backend_challenge.plaza.domain.usecase;
 
 import co.com.pragma.backend_challenge.plaza.domain.api.OrderServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.exception.*;
+import co.com.pragma.backend_challenge.plaza.domain.model.User;
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
 import co.com.pragma.backend_challenge.plaza.domain.model.Employee;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
+import co.com.pragma.backend_challenge.plaza.domain.model.messaging.Notification;
 import co.com.pragma.backend_challenge.plaza.domain.model.order.Order;
 import co.com.pragma.backend_challenge.plaza.domain.model.order.OrderDish;
 import co.com.pragma.backend_challenge.plaza.domain.model.security.AuthorizedUser;
-import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.DishPersistencePort;
-import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.EmployeePersistencePort;
-import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.OrderPersistencePort;
-import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.RestaurantPersistencePort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.messaging.NotificationSenderPort;
+import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.*;
 import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
 import co.com.pragma.backend_challenge.plaza.domain.util.DomainConstants;
 import co.com.pragma.backend_challenge.plaza.domain.util.GenerationUtils;
@@ -30,18 +30,24 @@ public class OrderUseCase implements OrderServicePort {
     private final AuthorizationSecurityPort authorizationSecurityPort;
     private final DishPersistencePort dishPersistencePort;
     private final EmployeePersistencePort employeePersistencePort;
+    private final UserPersistencePort userPersistencePort;
+    private final NotificationSenderPort notificationSenderPort;
 
     public OrderUseCase(OrderPersistencePort orderPersistencePort,
                         RestaurantPersistencePort restaurantPersistencePort,
                         AuthorizationSecurityPort authorizationSecurityPort,
                         DishPersistencePort dishPersistencePort,
-                        EmployeePersistencePort employeePersistencePort
+                        EmployeePersistencePort employeePersistencePort,
+                        UserPersistencePort userPersistencePort,
+                        NotificationSenderPort notificationSenderPort
     ) {
         this.orderPersistencePort = orderPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.authorizationSecurityPort = authorizationSecurityPort;
         this.dishPersistencePort = dishPersistencePort;
         this.employeePersistencePort = employeePersistencePort;
+        this.userPersistencePort = userPersistencePort;
+        this.notificationSenderPort = notificationSenderPort;
     }
 
     @Override
@@ -68,7 +74,7 @@ public class OrderUseCase implements OrderServicePort {
     public Order setAssignedEmployee(Long id) {
         Order order = orderPersistencePort.findById(id);
         if (order == null) throw new EntityNotFoundException(Order.class.getSimpleName(), id.toString());
-        if(order.getAssignedEmployee() != null) throw new OrderIsAlreadyAssignedException();
+        if (order.getAssignedEmployee() != null) throw new OrderIsAssignedToAnotherEmployeeException();
 
         AuthorizedUser user = getCurrentUser();
         if (user.getRole() != RoleName.EMPLOYEE) throw new NotAuthorizedException();
@@ -78,6 +84,28 @@ public class OrderUseCase implements OrderServicePort {
             throw new NotAuthorizedException();
         order.setAssignedEmployee(employee);
         order.setState(OrderState.PREPARING);
+        return orderPersistencePort.updateOrder(order);
+    }
+
+    @Override
+    public Order setOrderAsDone(Long id) {
+        AuthorizedUser user = getCurrentUser();
+        if (user.getRole() != RoleName.EMPLOYEE) throw new NotAuthorizedException();
+        Order order = orderPersistencePort.findById(id);
+        if (order == null) throw new EntityNotFoundException(Order.class.getSimpleName(), id.toString());
+
+        if (!Objects.equals(order.getAssignedEmployee().getId(), user.getId())) throw new OrderIsAssignedToAnotherEmployeeException();
+        if (order.getState() != OrderState.PREPARING) throw new OrderIsNotInPreparationStateException();
+
+        try {
+            notificationSenderPort.sendNotification(
+                    buildNotification(order.getCustomerId(), order.getSecurityPin())
+            );
+        } catch (Exception e){
+            throw new NotificationWasNotSentException();
+        }
+
+        order.setState(OrderState.DONE);
         return orderPersistencePort.updateOrder(order);
     }
 
@@ -120,5 +148,15 @@ public class OrderUseCase implements OrderServicePort {
         return authorizationSecurityPort.authorize(
                 TokenHolder.getToken().substring(DomainConstants.TOKEN_PREFIX.length())
         );
+    }
+
+    private Notification buildNotification(String customerId, String code) {
+        User user = userPersistencePort.getUser(customerId);
+        return Notification.builder()
+                .receiver(user.getPhone())
+                .message(String.format(
+                        DomainConstants.NOTIFICATION_MESSAGE_TEMPLATE,
+                        user.getName(), user.getLastname(), code))
+                .build();
     }
 }

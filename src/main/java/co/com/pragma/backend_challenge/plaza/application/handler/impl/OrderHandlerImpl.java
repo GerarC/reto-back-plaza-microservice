@@ -50,4 +50,11 @@ public class OrderHandlerImpl implements OrderHandler {
                 orderServicePort.setAssignedEmployee(id)
         );
     }
+
+    @Override
+    public OrderResponse setOrderAsDone(Long id) {
+        return orderResponseMapper.toResponse(
+                orderServicePort.setOrderAsDone(id)
+        );
+    }
 }

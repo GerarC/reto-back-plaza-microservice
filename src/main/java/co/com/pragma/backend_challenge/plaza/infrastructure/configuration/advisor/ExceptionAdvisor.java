@@ -39,8 +39,18 @@ public class ExceptionAdvisor {
         return ExceptionResponseBuilder.buildResponse(e, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(OrderIsAlreadyAssignedException.class)
-    public ResponseEntity<ExceptionResponse> handleOrderIsAlreadyAssigned(OrderIsAlreadyAssignedException e){
+    @ExceptionHandler(NotificationWasNotSentException.class)
+    public ResponseEntity<ExceptionResponse> handleNotificationWasNotSent(NotificationWasNotSentException e){
+        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(OrderIsAssignedToAnotherEmployeeException.class)
+    public ResponseEntity<ExceptionResponse> handleOrderIsAlreadyAssigned(OrderIsAssignedToAnotherEmployeeException e){
+        return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(OrderIsNotInPreparationStateException.class)
+    public ResponseEntity<ExceptionResponse> handleOrderIsNotInPreparationState(OrderIsNotInPreparationStateException e){
         return ExceptionResponseBuilder.buildResponse(e, HttpStatus.CONFLICT);
     }
 

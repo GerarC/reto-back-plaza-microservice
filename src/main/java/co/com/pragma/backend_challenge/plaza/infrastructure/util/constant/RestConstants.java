@@ -12,6 +12,8 @@ public class RestConstants {
     public static final String SWAGGER_SUMMARY_SET_PREPARING_ORDER = "Set order as being in preparation";
     public static final String SWAGGER_DESCRIPTION_SET_PREPARING_ORDER = "Order has been set in preparing";
     public static final String SWAGGER_ERROR_ANOTHER_EMPLOYEE_IS_ATTENDING_ORDER = "Another employee is attending this order";
+    public static final String SWAGGER_SUMMARY_SET_DONE_ORDER = "Set a preparing order as done";
+    public static final String SWAGGER_DESCRIPTION_SET_DONE_ORDER = "order has been set as done";
 
     private RestConstants() {
         throw new IllegalStateException("Utility Class");
