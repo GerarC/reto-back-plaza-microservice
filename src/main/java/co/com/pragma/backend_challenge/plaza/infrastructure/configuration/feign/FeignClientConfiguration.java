@@ -3,6 +3,7 @@ package co.com.pragma.backend_challenge.plaza.infrastructure.configuration.feign
 import co.com.pragma.backend_challenge.plaza.domain.util.TokenHolder;
 import co.com.pragma.backend_challenge.plaza.infrastructure.output.feign.client.AuthFeign;
 import co.com.pragma.backend_challenge.plaza.infrastructure.output.feign.client.NotificationFeign;
+import co.com.pragma.backend_challenge.plaza.infrastructure.output.feign.client.OrderReportFeign;
 import co.com.pragma.backend_challenge.plaza.infrastructure.output.feign.client.UserFeign;
 import co.com.pragma.backend_challenge.plaza.infrastructure.util.constant.ConfigurationConstants;
 import feign.Feign;
@@ -20,7 +21,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
         clients = {
                 AuthFeign.class,
                 NotificationFeign.class,
-                UserFeign.class
+                UserFeign.class,
+                OrderReportFeign.class
         }
 )
 public class FeignClientConfiguration {

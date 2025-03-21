@@ -22,7 +22,7 @@ public class OrderEntity {
     @Column(name = "customer_id", nullable = false)
     private String customerId;
 
-    @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<OrderDishEntity> dishes;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
