@@ -45,6 +45,7 @@ public class DomainConstants {
     public static final String SECURITY_PIN_DOES_NOT_MATCH = "Given security pin doesn't match with this order";
     public static final String ORDER_DOES_NOT_BELONG_TO_THE_USER = "Order cannot be change because doesn't belong to the user";
     public static final String ORDER_CANNOT_BE_CANCELED = "Order is being prepared, cannot be canceled";
+    public static final String ERROR_DURING_THE_PROCESS_OF_REPORT = "An error during the process of making the report has been occurred";
 
 
 }

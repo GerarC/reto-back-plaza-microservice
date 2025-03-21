@@ -14,6 +14,7 @@ import co.com.pragma.backend_challenge.plaza.domain.model.order.OrderDish;
 import co.com.pragma.backend_challenge.plaza.domain.model.security.AuthorizedUser;
 import co.com.pragma.backend_challenge.plaza.domain.spi.messaging.NotificationSenderPort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.*;
+import co.com.pragma.backend_challenge.plaza.domain.spi.report.OrderReportPort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
 import co.com.pragma.backend_challenge.plaza.domain.util.TokenHolder;
 import co.com.pragma.backend_challenge.plaza.domain.util.enums.OrderState;
@@ -70,6 +71,8 @@ class OrderUseCaseTest {
     private NotificationSenderPort notificationSenderPort;
     @Mock
     private UserPersistencePort userPersistencePort;
+    @Mock
+    private OrderReportPort orderReportPort;
 
     @InjectMocks
     private OrderUseCase orderUseCase;
@@ -102,6 +105,9 @@ class OrderUseCaseTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         TokenHolder.setToken(USER_TOKEN);
+        doNothing().when(orderReportPort).sendNewOrderReport(any());
+        doNothing().when(orderReportPort).addNewStateToOrderLog(any(), any());
+        doNothing().when(orderReportPort).addNewStateToOrderLog(any(), any());
     }
 
     @Test

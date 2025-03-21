@@ -6,6 +6,7 @@ import co.com.pragma.backend_challenge.plaza.domain.api.RestaurantServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.api.security.AuthorizationServicePort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.messaging.NotificationSenderPort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.persistence.*;
+import co.com.pragma.backend_challenge.plaza.domain.spi.report.OrderReportPort;
 import co.com.pragma.backend_challenge.plaza.domain.spi.security.AuthorizationSecurityPort;
 import co.com.pragma.backend_challenge.plaza.domain.usecase.DishUseCase;
 import co.com.pragma.backend_challenge.plaza.domain.usecase.OrderUseCase;
@@ -70,7 +71,8 @@ public class BeanConfiguration {
             DishPersistencePort dishPersistencePort,
             EmployeePersistencePort employeePersistencePort,
             UserPersistencePort userPersistencePort,
-            NotificationSenderPort notificationSenderPort
+            NotificationSenderPort notificationSenderPort,
+            OrderReportPort orderReportPort
     ){
         return new OrderUseCase(
                 orderPersistencePort,
@@ -79,7 +81,8 @@ public class BeanConfiguration {
                 dishPersistencePort,
                 employeePersistencePort,
                 userPersistencePort,
-                notificationSenderPort
+                notificationSenderPort,
+                orderReportPort
         );
     }
 
