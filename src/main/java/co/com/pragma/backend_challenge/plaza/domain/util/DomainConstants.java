@@ -8,6 +8,8 @@ import java.util.List;
 @Generated
 public class DomainConstants {
 
+    public static final String OWNER_HAS_NOT_RESTAURANT_REGISTERED = "Owner has not restaurant registered";
+
     private DomainConstants() {
         throw new IllegalStateException("Utility Class");
     }

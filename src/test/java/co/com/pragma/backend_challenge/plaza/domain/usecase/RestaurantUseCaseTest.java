@@ -1,9 +1,6 @@
 package co.com.pragma.backend_challenge.plaza.domain.usecase;
 
-import co.com.pragma.backend_challenge.plaza.domain.exception.EntityAlreadyExistsException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.EntityNotFoundException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.RestaurantDoesNotBelongToUserException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.UserRoleMustBeOwnerException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.*;
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
 import co.com.pragma.backend_challenge.plaza.domain.model.Employee;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
@@ -61,6 +58,26 @@ class RestaurantUseCaseTest {
     private static final String RESTAURANT_ADDRESS = "123 Fake Street";
     private static final String RESTAURANT_PHONE = "555-1234";
     private static final String RESTAURANT_LOGO_URL = "http://example.com/logo.png";
+
+    private static final String USER_ID = "user-id";
+    private static final RoleName USER_ROLE = RoleName.CUSTOMER;
+    private static final String EMPLOYEE_ID = "employee-id";
+    private static final RoleName EMPLOYEE_ROLE = RoleName.EMPLOYEE;
+    private static final String USER_TOKEN = "user-authorization-token";
+    private static final Long ORDER_ID = 1L;
+    private static final Long DISH_ID = 101L;
+
+    private static final AuthorizedUser mockUser = AuthorizedUser.builder()
+            .role(USER_ROLE)
+            .token(USER_TOKEN)
+            .id(USER_ID)
+            .build();
+
+    private static final AuthorizedUser mockEmployee = AuthorizedUser.builder()
+            .role(EMPLOYEE_ROLE)
+            .token(USER_TOKEN)
+            .id(EMPLOYEE_ID)
+            .build();
 
     private static final Restaurant mockRestaurant = new Restaurant.RestaurantBuilder()
             .nit(RESTAURANT_NIT)
@@ -207,5 +224,24 @@ class RestaurantUseCaseTest {
 
         assertNotNull(result);
         assertTrue(result.getContent().isEmpty());
+    }
+
+    @Test
+    void findCurrentOwnerRestaurant_Success() {
+        when(authorizationSecurityPort.authorize(any())).thenReturn(mockEmployee);
+        when(restaurantPersistencePort.findByOwnerId(any())).thenReturn(mockRestaurant);
+
+        Restaurant result = restaurantUseCase.findCurrentOwnerRestaurant();
+
+        assertNotNull(result);
+        verify(restaurantPersistencePort).findByOwnerId(any());
+    }
+
+    @Test
+    void findCurrentOwnerRestaurant_OwnerHasNoRestaurant() {
+        when(authorizationSecurityPort.authorize(any())).thenReturn(mockEmployee);
+        when(restaurantPersistencePort.findByOwnerId(any())).thenReturn(null);
+
+        assertThrows(OwnerHasNotRestaurantException.class, () -> restaurantUseCase.findCurrentOwnerRestaurant());
     }
 }

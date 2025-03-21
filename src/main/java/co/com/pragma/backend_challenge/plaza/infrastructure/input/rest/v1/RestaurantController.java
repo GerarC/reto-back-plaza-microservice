@@ -7,10 +7,7 @@ import co.com.pragma.backend_challenge.plaza.application.dto.request.filter.Dish
 import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.PageQuery;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.PaginationRequest;
 import co.com.pragma.backend_challenge.plaza.application.dto.request.pagination.RestaurantPageQuery;
-import co.com.pragma.backend_challenge.plaza.application.dto.response.DishResponse;
-import co.com.pragma.backend_challenge.plaza.application.dto.response.EmployeeResponse;
-import co.com.pragma.backend_challenge.plaza.application.dto.response.PageResponse;
-import co.com.pragma.backend_challenge.plaza.application.dto.response.RestaurantResponse;
+import co.com.pragma.backend_challenge.plaza.application.dto.response.*;
 import co.com.pragma.backend_challenge.plaza.application.handler.RestaurantHandler;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ExceptionResponse;
 import co.com.pragma.backend_challenge.plaza.infrastructure.configuration.advisor.response.ValidationExceptionResponse;
@@ -139,6 +136,26 @@ public class RestaurantController {
         PaginationRequest pagination = PaginationRequest.build(query);
         return ResponseEntity.ok(
                 restaurantHandler.findDishesOfRestaurant(id, pagination, filterRequest)
+        );
+    }
+
+    @Operation(summary = RestConstants.SWAGGER_SUMMARY_FIND_OWNER_RESTAURANT)
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_CREATED,
+                    description = RestConstants.SWAGGER_DESCRIPTION_FOUND_OWNER_RESTAURANT,
+                    content =  @Content(schema = @Schema(implementation = PageResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = RestConstants.SWAGGER_CODE_NOT_FOUND,
+                    description = RestConstants.SWAGGER_ERROR_RESTAURANT_DOES_NOT_FOUND,
+                    content =  @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+    })
+    @GetMapping("/owner")
+    public ResponseEntity<OwnerRestaurantResponse> getRestaurantCurrentUser(){
+        return ResponseEntity.ok(
+                restaurantHandler.findCurrentUserRestaurant()
         );
     }
 }

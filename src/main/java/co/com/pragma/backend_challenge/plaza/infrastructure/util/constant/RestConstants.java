@@ -10,6 +10,8 @@ public class RestConstants {
     public static final String SWAGGER_SUMMARY_SET_CANCELED_ORDER = "Set the order as canceled";
     public static final String SWAGGER_DESCRIPTION_SET_CANCELED_ORDER = "The order has been canceled successfully";
     public static final String SWAGGER_ERROR_ORDER_IS_BEING_PREPARED = "The order could not be canceled because is being prepared";
+    public static final String SWAGGER_SUMMARY_FIND_OWNER_RESTAURANT = "Search restaurant of the current user";
+    public static final String SWAGGER_DESCRIPTION_FOUND_OWNER_RESTAURANT = "Restaurant has been found";
 
     private RestConstants() {
         throw new IllegalStateException("Utility Class");

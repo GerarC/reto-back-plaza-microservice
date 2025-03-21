@@ -48,4 +48,11 @@ public class RestaurantJpaAdapter implements RestaurantPersistencePort {
         Page<RestaurantEntity> page = restaurantRepository.findAll(paginationJpa.createPageable());
         return restaurantEntityMapper.toDomains(page);
     }
+
+    @Override
+    public Restaurant findByOwnerId(String id) {
+        return  restaurantEntityMapper.toDomain(
+                restaurantRepository.findByOwnerId(id).orElse(null)
+        );
+    }
 }

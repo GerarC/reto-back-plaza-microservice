@@ -1,10 +1,7 @@
 package co.com.pragma.backend_challenge.plaza.domain.usecase;
 
 import co.com.pragma.backend_challenge.plaza.domain.api.RestaurantServicePort;
-import co.com.pragma.backend_challenge.plaza.domain.exception.EntityAlreadyExistsException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.EntityNotFoundException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.RestaurantDoesNotBelongToUserException;
-import co.com.pragma.backend_challenge.plaza.domain.exception.UserRoleMustBeOwnerException;
+import co.com.pragma.backend_challenge.plaza.domain.exception.*;
 import co.com.pragma.backend_challenge.plaza.domain.model.Dish;
 import co.com.pragma.backend_challenge.plaza.domain.model.Employee;
 import co.com.pragma.backend_challenge.plaza.domain.model.Restaurant;
@@ -76,6 +73,14 @@ public class RestaurantUseCase implements RestaurantServicePort {
                 .state(DishState.ACTIVE)
                 .build();
         return dishPersistencePort.findAll(filter, paginationData);
+    }
+
+    @Override
+    public Restaurant findCurrentOwnerRestaurant() {
+        AuthorizedUser owner = authorizationSecurityPort.authorize(TokenHolder.getToken().substring(DomainConstants.TOKEN_PREFIX.length()));
+        Restaurant restaurant=  restaurantPersistencePort.findByOwnerId(owner.getId());
+        if(restaurant == null) throw new OwnerHasNotRestaurantException();
+        return restaurant;
     }
 
     private void validateRestaurantData(Restaurant restaurant){
